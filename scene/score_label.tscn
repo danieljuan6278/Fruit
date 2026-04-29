@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://dypitys0xrs8x"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_hb80l"]
+
+[node name="ScoreLabel" type="CanvasLayer" unique_id=1333062735]
+layer = 3
+
+[node name="Label" type="Label" parent="." unique_id=1603186545]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Score: 0"
+label_settings = SubResource("LabelSettings_hb80l")

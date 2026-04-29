@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://d0vt4lr2qrn64"]
+
+[ext_resource type="Script" uid="uid://dh25gaxlt6nx" path="res://script/piece.gd" id="1_nrwpe"]
+[ext_resource type="Texture2D" uid="uid://xosj1iwitf27" path="res://assets/Fruits/Singles/02_Cherry_Black.png" id="2_3653e"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8i32i"]
+size = Vector2(28.825005, 30)
+
+[node name="Piece" type="Area2D" unique_id=1313592126]
+script = ExtResource("1_nrwpe")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1933019120]
+position = Vector2(14.594934, 15)
+scale = Vector2(1.0200727, 1)
+shape = SubResource("RectangleShape2D_8i32i")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=623767005]
+texture_filter = 1
+position = Vector2(15, 15)
+scale = Vector2(0.8800003, 1)
+texture = ExtResource("2_3653e")

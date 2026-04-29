@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://drridt7xjfkdc"]
+
+[ext_resource type="Script" uid="uid://2b4r3r6rbklr" path="res://script/game.gd" id="1_5kiuu"]
+[ext_resource type="PackedScene" uid="uid://8lywxxufxfsh" path="res://scene/grid_tile.tscn" id="2_33cqm"]
+[ext_resource type="PackedScene" uid="uid://d0vt4lr2qrn64" path="res://scene/piece.tscn" id="2_dbls1"]
+
+[node name="Game" type="Node2D" unique_id=1400624535 node_paths=PackedStringArray("score_label")]
+script = ExtResource("1_5kiuu")
+grid_tile_scene = ExtResource("2_33cqm")
+piece_scene = ExtResource("2_dbls1")
+score_label = NodePath("CanvasLayer/Label")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=536135343]
+
+[node name="Label" type="Label" parent="CanvasLayer" unique_id=209545689]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Score: 0"
