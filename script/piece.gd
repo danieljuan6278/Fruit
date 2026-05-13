@@ -15,6 +15,7 @@ var fruit_textures = {
 func _ready() -> void:
 	# Ensure the piece can be clicked
 	input_pickable = true
+	self.scale = Vector2(2, 2)
 
 func set_fruit(type: String):
 	fruit_type = type

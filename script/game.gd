@@ -5,10 +5,12 @@ extends Node2D
 @export var score_label: Label 
 
 @export var width: int = 8
-@export var height: int = 8
-@export var x_start: int = 64
-@export var y_start: int = 800
+@export var height: int = 10
+@export var x_start: int = 65
+@export var y_start: int = 1000
 @export var offset: int = 80
+@export var score_checkpoint: int = 500
+@onready var progress_bar = $score_label/ScoreProgress
 
 var fruits = ["black", "red", "green", "yellow", "orange"]
 var all_pieces = []
@@ -20,6 +22,11 @@ var touch_start_pos = Vector2.ZERO
 var swipe_threshold = 50 
 
 func _ready() -> void:
+	if progress_bar:
+		progress_bar.min_value = 0
+		progress_bar.max_value = score_checkpoint
+		progress_bar.value = 0
+		
 	all_pieces = make_2d_array()
 	spawn_board()
 	update_score_display()
@@ -37,7 +44,11 @@ func spawn_board():
 		return
 	for i in width:
 		for j in height:
-			var pos = Vector2(x_start + (i * offset), y_start - (j * offset))
+			# Example: nudge every piece 5 pixels right and 5 pixels up
+			var nudge_x = -5
+			var nudge_y = -5 
+
+			var pos = Vector2(x_start + (i * offset) + nudge_x, y_start - (j * offset) + nudge_y)
 			var tile = grid_tile_scene.instantiate()
 			add_child(tile)
 			tile.position = pos
@@ -210,6 +221,29 @@ func refill_columns():
 		is_swapping = false 
 
 func update_score_display():
+	
 	if score_label:
 		score_label.text = "Score: " + str(score)
-	print("Current Score: ", score)
+		score_label.add_theme_font_size_override("font_size", 50)
+		# --- Added Visual Juice ---
+		# This makes the score board "pulse" when points are added
+		var scoreboard_ui = score_label.get_parent() # Assuming Label is child of TextureRect
+		var score_tween = create_tween()
+		
+		# Scale up slightly and turn gold, then back to normal
+		score_tween.tween_property(scoreboard_ui, "scale", Vector2(1.1, 1.1), 0.1)
+		score_tween.tween_property(scoreboard_ui, "modulate", Color.GOLD, 0.1)
+		
+		score_tween.chain().tween_property(scoreboard_ui, "scale", Vector2(1.0, 1.0), 0.2)
+		score_tween.tween_property(scoreboard_ui, "modulate", Color.WHITE, 0.2)
+
+	if progress_bar:
+		print("Updating bar: ", score)
+		var bar_tween = create_tween()
+		bar_tween.tween_property(progress_bar, "value", score, 0.5).set_trans(Tween.TRANS_SINE)
+	
+	if score >= score_checkpoint:
+		reach_checkpoint()
+
+func reach_checkpoint():
+	print("Level Complete or Checkpoint Reached!")	

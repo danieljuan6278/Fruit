@@ -3,16 +3,76 @@
 [ext_resource type="Script" uid="uid://2b4r3r6rbklr" path="res://script/game.gd" id="1_5kiuu"]
 [ext_resource type="PackedScene" uid="uid://8lywxxufxfsh" path="res://scene/grid_tile.tscn" id="2_33cqm"]
 [ext_resource type="PackedScene" uid="uid://d0vt4lr2qrn64" path="res://scene/piece.tscn" id="2_dbls1"]
+[ext_resource type="FontFile" uid="uid://b7r3gd2h62crf" path="res://assets/arcadeclassic/ARCADECLASSIC.TTF" id="5_p1ry8"]
+[ext_resource type="Texture2D" uid="uid://bxyuxjlwd6tmn" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/Sprite sheet for Basic Pack2.png" id="5_xlg7c"]
+[ext_resource type="Texture2D" uid="uid://dds1ljl8hro28" path="res://assets/horizontal bars/most rounded/progress bar most rounded progress orange.png" id="6_xlg7c"]
+[ext_resource type="Texture2D" uid="uid://hoxhy2e20ty5" path="res://assets/horizontal bars/most rounded/progress bar most rounded over.png" id="7_qpk70"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ll5lq"]
+atlas = ExtResource("5_xlg7c")
+region = Rect2(256, 176, 96, 32)
+
+[sub_resource type="Theme" id="Theme_xwcet"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_33cqm"]
+font_size = 42
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_17rxn"]
+atlas = ExtResource("6_xlg7c")
 
 [node name="Game" type="Node2D" unique_id=1400624535 node_paths=PackedStringArray("score_label")]
 script = ExtResource("1_5kiuu")
 grid_tile_scene = ExtResource("2_33cqm")
 piece_scene = ExtResource("2_dbls1")
-score_label = NodePath("CanvasLayer/Label")
+score_label = NodePath("score_label/ScoreContainer/TextureRect/Label")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=536135343]
+[node name="score_label" type="CanvasLayer" parent="." unique_id=929956543]
 
-[node name="Label" type="Label" parent="CanvasLayer" unique_id=209545689]
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="ScoreContainer" type="Control" parent="score_label" unique_id=1924509030]
+layout_mode = 3
+anchor_right = 1.0
+anchor_bottom = 0.081
+offset_bottom = 4.3199997
+grow_horizontal = 2
+
+[node name="TextureRect" type="TextureRect" parent="score_label/ScoreContainer" unique_id=1578665556]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 30.0
+offset_top = 12.0
+offset_right = -424.0
+offset_bottom = 101.0
+grow_horizontal = 2
+texture = SubResource("AtlasTexture_ll5lq")
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="score_label/ScoreContainer/TextureRect" unique_id=412559721]
+texture_filter = 1
+layout_mode = 0
+offset_left = 11.0
+offset_top = 14.0
+offset_right = 254.0
+offset_bottom = 78.0
+theme = SubResource("Theme_xwcet")
+theme_type_variation = &"GraphFrameTitleLabel"
+theme_override_fonts/font = ExtResource("5_p1ry8")
+theme_override_font_sizes/font_size = 40
 text = "Score: 0"
+label_settings = SubResource("LabelSettings_33cqm")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+uppercase = true
+
+[node name="ScoreProgress" type="TextureProgressBar" parent="score_label" unique_id=1748475721]
+texture_filter = 1
+offset_left = 46.0
+offset_top = 98.0
+offset_right = 293.0
+offset_bottom = 136.0
+max_value = 2000.0
+nine_patch_stretch = true
+texture_over = ExtResource("7_qpk70")
+texture_progress = SubResource("AtlasTexture_17rxn")

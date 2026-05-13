@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://dypitys0xrs8x"]
 
+[ext_resource type="FontFile" uid="uid://b7r3gd2h62crf" path="res://assets/arcadeclassic/ARCADECLASSIC.TTF" id="1_r26d0"]
+
 [sub_resource type="LabelSettings" id="LabelSettings_hb80l"]
+font_size = 42
 
 [node name="ScoreLabel" type="CanvasLayer" unique_id=1333062735]
 layer = 3
@@ -8,5 +11,7 @@ layer = 3
 [node name="Label" type="Label" parent="." unique_id=1603186545]
 offset_right = 40.0
 offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("1_r26d0")
+theme_override_font_sizes/font_size = 42
 text = "Score: 0"
 label_settings = SubResource("LabelSettings_hb80l")
