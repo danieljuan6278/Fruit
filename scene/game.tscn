@@ -69,30 +69,30 @@ uppercase = true
 
 [node name="ScoreProgress" type="TextureProgressBar" parent="score_label"]
 texture_filter = 1
-offset_left = 46.0
-offset_top = 98.0
-offset_right = 293.0
-offset_bottom = 136.0
+offset_left = 318.0
+offset_top = 40.0
+offset_right = 565.0
+offset_bottom = 78.0
 max_value = 1200.0
 nine_patch_stretch = true
 texture_over = ExtResource("7_qpk70")
 texture_progress = SubResource("AtlasTexture_17rxn")
 
 [node name="RankLabel" type="Label" parent="score_label"]
-offset_left = 462.0
-offset_top = 87.0
-offset_right = 709.0
-offset_bottom = 118.0
+offset_left = 315.0
+offset_top = 121.0
+offset_right = 562.0
+offset_bottom = 152.0
 theme_override_fonts/font = ExtResource("5_p1ry8")
 theme_override_font_sizes/font_size = 30
 text = "C"
 horizontal_alignment = 1
 
 [node name="MovesLabel" type="Label" parent="score_label"]
-offset_left = 465.0
-offset_top = 35.0
-offset_right = 712.0
-offset_bottom = 76.0
+offset_left = 42.0
+offset_top = 114.0
+offset_right = 289.0
+offset_bottom = 155.0
 theme_override_fonts/font = ExtResource("5_p1ry8")
 theme_override_font_sizes/font_size = 30
 text = "Moves: 30"
