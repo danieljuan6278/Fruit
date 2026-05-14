@@ -3,6 +3,16 @@ extends Node2D
 @export var grid_tile_scene: PackedScene
 @export var piece_scene: PackedScene
 @export var ui_manager: UIManager
+@export var falling_leaves_scene: PackedScene = preload("res://scene/falling_leaves.tscn")
+@export_group("Combo Effect")
+@export var combo_font: Font = preload("res://assets/arcadeclassic/ARCADECLASSIC.TTF")
+@export var combo_text_color: Color = Color(1.0, 0.86, 0.25)
+@export var combo_multiplier_color: Color = Color(1.0, 0.28, 0.16)
+@export_range(16, 160, 1) var combo_text_size: int = 64
+@export_range(16, 160, 1) var combo_multiplier_size: int = 52
+@export_range(0.05, 1.0, 0.05) var combo_start_scale: float = 0.25
+@export_range(1.0, 3.0, 0.05) var combo_explosion_scale: float = 1.35
+@export_group("")
 
 @export var width: int = 8
 @export var height: int = 10
@@ -196,7 +206,15 @@ func destroy_matches():
 		avg_pos /= destroyed_count
 		if game_state.match_count >= 3:
 			var combo_display = preload("res://script/combo_display.gd").new()
-			combo_display.text = "Combo" # Just "Combo" per user instructions
+			combo_display.apply_preset(
+				combo_font,
+				combo_text_color,
+				combo_multiplier_color,
+				combo_text_size,
+				combo_multiplier_size,
+				combo_start_scale,
+				combo_explosion_scale
+			)
 			add_child(combo_display)
 			combo_display.show_combo_at(avg_pos, game_state.match_count)
 			
@@ -224,6 +242,27 @@ func calculate_score(count: int):
 		# Phase target reached, advance when animations finish
 		await get_tree().create_timer(0.5).timeout
 		game_state.advance_phase()
+
+func play_falling_leaves_phase_effect():
+	if falling_leaves_scene == null:
+		return
+	
+	var leaves = falling_leaves_scene.instantiate()
+	add_child(leaves)
+	
+	var viewport_size = get_viewport_rect().size
+	var random_x = randf_range(40.0, max(40.0, viewport_size.x - 40.0))
+	leaves.global_position = Vector2(random_x, -80.0)
+	leaves.z_index = 100
+	
+	if leaves is CPUParticles2D:
+		leaves.emitting = true
+		leaves.restart()
+	
+	get_tree().create_timer(7.0).timeout.connect(func():
+		if is_instance_valid(leaves):
+			leaves.queue_free()
+	)
 
 func collapse_columns():
 	for i in width:
@@ -259,6 +298,7 @@ func refill_columns():
 func _on_phase_advance(phase: String, moves: int):
 	"""Called when phase changes"""
 	print("Advanced to phase: %s with %d moves" % [phase, moves])
+	play_falling_leaves_phase_effect()
 
 func _on_score_updated(total: int, phase: int):
 	"""Called when score updates"""
