@@ -1,6 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://drridt7xjfkdc"]
+[gd_scene load_steps=13 format=3 uid="uid://drridt7xjfkdc"]
 
 [ext_resource type="Script" uid="uid://2b4r3r6rbklr" path="res://script/game.gd" id="1_5kiuu"]
+[ext_resource type="Script" uid="uid://fe83cslqc1hb" path="res://script/ui_manager.gd" id="1_jd5gt"]
 [ext_resource type="PackedScene" uid="uid://8lywxxufxfsh" path="res://scene/grid_tile.tscn" id="2_33cqm"]
 [ext_resource type="PackedScene" uid="uid://d0vt4lr2qrn64" path="res://scene/piece.tscn" id="2_dbls1"]
 [ext_resource type="FontFile" uid="uid://b7r3gd2h62crf" path="res://assets/arcadeclassic/ARCADECLASSIC.TTF" id="5_p1ry8"]
@@ -20,18 +21,11 @@ font_size = 42
 [sub_resource type="AtlasTexture" id="AtlasTexture_17rxn"]
 atlas = ExtResource("6_xlg7c")
 
-[node name="Game" type="Node2D" node_paths=PackedStringArray("score_label", "rank_label", "moves_label")]
+[node name="Game" type="Node2D" node_paths=PackedStringArray("ui_manager")]
 script = ExtResource("1_5kiuu")
 grid_tile_scene = ExtResource("2_33cqm")
 piece_scene = ExtResource("2_dbls1")
-width = null
-height = null
-x_start = null
-y_start = null
-offset = null
-score_label = NodePath("score_label/ScoreContainer/TextureRect/Label")
-rank_label = NodePath("score_label/RankLabel")
-moves_label = NodePath("score_label/MovesLabel")
+ui_manager = NodePath("UIManager")
 
 [node name="score_label" type="CanvasLayer" parent="."]
 
@@ -85,21 +79,28 @@ texture_over = ExtResource("7_qpk70")
 texture_progress = SubResource("AtlasTexture_17rxn")
 
 [node name="RankLabel" type="Label" parent="score_label"]
-offset_left = 46.0
-offset_top = 140.0
-offset_right = 293.0
-offset_bottom = 170.0
+offset_left = 462.0
+offset_top = 87.0
+offset_right = 709.0
+offset_bottom = 118.0
 theme_override_fonts/font = ExtResource("5_p1ry8")
 theme_override_font_sizes/font_size = 30
 text = "C"
 horizontal_alignment = 1
 
 [node name="MovesLabel" type="Label" parent="score_label"]
-offset_left = 46.0
-offset_top = 170.0
-offset_right = 293.0
-offset_bottom = 200.0
+offset_left = 465.0
+offset_top = 35.0
+offset_right = 712.0
+offset_bottom = 76.0
 theme_override_fonts/font = ExtResource("5_p1ry8")
 theme_override_font_sizes/font_size = 30
 text = "Moves: 30"
 horizontal_alignment = 1
+
+[node name="UIManager" type="Node" parent="."]
+script = ExtResource("1_jd5gt")
+score_label = NodePath("../score_label/ScoreContainer/TextureRect/Label")
+rank_label = NodePath("../score_label/RankLabel")
+moves_label = NodePath("../score_label/MovesLabel")
+progress_bar = NodePath("../score_label/ScoreProgress")

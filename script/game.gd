@@ -2,28 +2,17 @@ extends Node2D
 
 @export var grid_tile_scene: PackedScene
 @export var piece_scene: PackedScene
-@export var score_label: Label 
-@export var rank_label: Label
-@export var moves_label: Label 
+@export var ui_manager: UIManager
 
 @export var width: int = 8
 @export var height: int = 10
 @export var x_start: int = 65
 @export var y_start: int = 1000
 @export var offset: int = 80
-@onready var progress_bar = $score_label/ScoreProgress
 
-var current_phase: int = 0
-var phases: Array = ["C", "B", "A", "S", "S+"]
-var phase_targets: Array = [1200, 2200, 3200, 4200, 0]  # 0 for unlimited in S+
-var phase_moves: Array = [30, 25, 20, 15, 10]
-var moves_left: int = 30
-var total_score: int = 0  # Cumulative score across phases
-var match_count: int = 0  # For combo bonus in S+
-
+var game_state: GameState
 var fruits = ["black", "red", "green", "yellow", "orange"]
 var all_pieces = []
-var score: int = 0
 
 var first_piece = null
 var is_swapping = false 
@@ -31,16 +20,21 @@ var touch_start_pos = Vector2.ZERO
 var swipe_threshold = 50 
 
 func _ready() -> void:
-	if progress_bar:
-		progress_bar.min_value = 0
-		progress_bar.max_value = phase_targets[current_phase]
-		progress_bar.value = 0
-		
+	# Initialize game state
+	game_state = GameState.new()
+	add_child(game_state)
+	
+	# Connect game state signals
+	game_state.phase_changed.connect(_on_phase_advance)
+	game_state.score_updated.connect(_on_score_updated)
+	
+	# Set UI manager's game state reference
+	if ui_manager:
+		ui_manager.set_game_state(game_state)
+		ui_manager.initialize_display()
+	
 	all_pieces = make_2d_array()
 	spawn_board()
-	update_score_display()
-	update_rank_display()
-	update_moves_display()
 
 func make_2d_array():
 	var array = []
@@ -141,11 +135,11 @@ func swap_pieces(p1, p2):
 	tween.tween_property(p1, "position", p2_pos, 0.2).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(p2, "position", p1_pos, 0.2).set_trans(Tween.TRANS_SINE)
 	await tween.finished
-	match_count = 0  # Reset for this turn
+	
+	game_state.match_count = 0  # Reset for this turn
 	if find_matches():
-		moves_left -= 1  # Only count if score made
-		update_moves_display()
-		check_game_over()
+		if game_state.use_move():  # Deduct move only if successful match
+			pass
 	else:
 		# Swap back if no matches
 		all_pieces[g1.x][g1.y] = p1
@@ -182,7 +176,7 @@ func find_matches() -> bool:
 	return found_match
 
 func destroy_matches():
-	match_count += 1
+	game_state.increment_matches()
 	var destroyed_count = 0
 	for i in width:
 		for j in height:
@@ -206,12 +200,12 @@ func calculate_score(count: int):
 		bonus = 40
 	elif count >= 6:
 		bonus = 80
-	total_score += (base_points + bonus)  # Add to total score
-	score += (base_points + bonus)  # Phase score for progress bar
-	update_score_display()
 	
-	if current_phase < 4 and score >= phase_targets[current_phase]:
-		reach_checkpoint()
+	var total_points = base_points + bonus
+	if game_state.add_score(total_points):
+		# Phase target reached, advance when animations finish
+		await get_tree().create_timer(0.5).timeout
+		game_state.advance_phase()
 
 func collapse_columns():
 	for i in width:
@@ -241,52 +235,13 @@ func refill_columns():
 	await get_tree().create_timer(0.4).timeout
 	if not find_matches():
 		is_swapping = false
-		# Bonus move for combos in S+
-		if current_phase == 4 and match_count >= 2:
-			moves_left += 1
-			update_moves_display()
-			print("Combo Bonus! +1 Move")
+		# Check for combo bonus in S+ phase
+		game_state.check_combo_bonus()
 
-func update_score_display():
-	if score_label:
-		score_label.text = "Score: " + str(total_score)
-		score_label.add_theme_font_size_override("font_size", 50)
-		# --- Added Visual Juice ---
-		# This makes the score board "pulse" when points are added
-		var scoreboard_ui = score_label.get_parent() # Assuming Label is child of TextureRect
-		var score_tween = create_tween()
-		
-		# Scale up slightly and turn gold, then back to normal
-		score_tween.tween_property(scoreboard_ui, "scale", Vector2(1.1, 1.1), 0.1)
-		score_tween.tween_property(scoreboard_ui, "modulate", Color.GOLD, 0.1)
-		
-		score_tween.chain().tween_property(scoreboard_ui, "scale", Vector2(1.0, 1.0), 0.2)
-		score_tween.tween_property(scoreboard_ui, "modulate", Color.WHITE, 0.2)
+func _on_phase_advance(phase: String, moves: int):
+	"""Called when phase changes"""
+	print("Advanced to phase: %s with %d moves" % [phase, moves])
 
-	if progress_bar:
-		print("Updating bar: ", score)
-		var bar_tween = create_tween()
-		bar_tween.tween_property(progress_bar, "value", score, 0.5).set_trans(Tween.TRANS_SINE)
-
-func reach_checkpoint():
-	current_phase += 1
-	score = 0  # Reset phase score
-	progress_bar.max_value = phase_targets[current_phase] if current_phase < 4 else 999999  # Unlimited for S+
-	progress_bar.value = 0
-	moves_left = phase_moves[current_phase]
-	update_rank_display()
-	update_moves_display()
-	print("Phase Complete! Advanced to " + phases[current_phase])
-
-func update_rank_display():
-	if rank_label:
-		rank_label.text = phases[current_phase]
-
-func update_moves_display():
-	if moves_label:
-		moves_label.text = "Moves: " + str(moves_left)
-
-func check_game_over():
-	if moves_left <= 0 and current_phase < 4:
-		print("Game Over! Out of moves.")
-		# Add game over logic here (e.g., show a screen or restart)	
+func _on_score_updated(total: int, phase: int):
+	"""Called when score updates"""
+	print("Score updated - Total: %d, Phase: %d" % [total, phase])	
