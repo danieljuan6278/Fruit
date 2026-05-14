@@ -41,6 +41,7 @@ func _tween_modulate(btn, color, duration):
 
 
 func _on_pause_pressed():
+	AudioManager.play_buttons()
 	show_menu("PAUSED")
 
 func show_menu(menu_title: String):
@@ -54,14 +55,17 @@ func show_menu(menu_title: String):
 		resume_btn.show()
 
 func _on_resume_pressed():
+	AudioManager.play_buttons()
 	get_tree().paused = false
 	overlay.hide()
 
 func _on_restart_pressed():
+	AudioManager.play_buttons()
 	get_tree().paused = false
 	get_tree().reload_current_scene()
 
 func _on_quit_pressed():
+	AudioManager.play_buttons()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scene/main_menu.tscn")
 
