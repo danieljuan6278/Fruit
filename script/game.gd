@@ -144,6 +144,7 @@ func swap_pieces(p1, p2):
 	if find_matches():
 		if game_state.use_move():  # Deduct move only if successful match
 			pass
+		# is_swapping is set to false in refill_columns() once all cascades are finished
 	else:
 		# Swap back if no matches
 		all_pieces[g1.x][g1.y] = p1
@@ -152,7 +153,7 @@ func swap_pieces(p1, p2):
 		tween_back.tween_property(p1, "position", p1_pos, 0.1).set_trans(Tween.TRANS_SINE)
 		tween_back.tween_property(p2, "position", p2_pos, 0.1).set_trans(Tween.TRANS_SINE)
 		await tween_back.finished
-	is_swapping = false 
+		is_swapping = false 
 
 func find_matches() -> bool:
 	var found_match = false
