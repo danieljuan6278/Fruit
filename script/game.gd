@@ -33,7 +33,9 @@ func _ready() -> void:
 	if ui_manager:
 		ui_manager.set_game_state(game_state)
 	
-	setup_pause_menu()
+	var pause_menu = preload("res://scene/pause_menu.tscn").instantiate()
+	add_child(pause_menu)
+	game_state.game_over.connect(func(phase): pause_menu.show_game_over())
 	
 	all_pieces = make_2d_array()
 	spawn_board()
@@ -255,96 +257,4 @@ func _on_phase_advance(phase: String, moves: int):
 
 func _on_score_updated(total: int, phase: int):
 	"""Called when score updates"""
-	print("Score updated - Total: %d, Phase: %d" % [total, phase])	
-
-# --- PAUSE MENU LOGIC ---
-var pause_panel: ColorRect
-
-func setup_pause_menu():
-	var canvas = CanvasLayer.new()
-	canvas.layer = 100 # Put it on top
-	canvas.process_mode = Node.PROCESS_MODE_ALWAYS
-	add_child(canvas)
-	
-	# Pause button on HUD
-	var pause_btn = Button.new()
-	pause_btn.text = "||" # Pause icon or text
-	pause_btn.add_theme_font_size_override("font_size", 40)
-	
-	# For mobile, it's nice to have it in the top corner. Since width is 8 * 80 = 640 approx, x=600 is good
-	pause_btn.position = Vector2(600, 20)
-	pause_btn.size = Vector2(80, 80)
-	pause_btn.pressed.connect(show_pause_menu)
-	canvas.add_child(pause_btn)
-	
-	# Pause panel
-	pause_panel = ColorRect.new()
-	pause_panel.color = Color(0, 0, 0, 0.7)
-	pause_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
-	# Size manually since anchors might be tricky if parent isn't a Control
-	var viewport_size = get_viewport_rect().size
-	pause_panel.size = viewport_size
-	if viewport_size == Vector2.ZERO:
-		pause_panel.size = Vector2(720, 1280) # Fallback size
-		
-	pause_panel.hide()
-	canvas.add_child(pause_panel)
-	
-	var vbox = VBoxContainer.new()
-	vbox.set_anchors_preset(Control.PRESET_CENTER)
-	vbox.add_theme_constant_override("separation", 20)
-	vbox.position = Vector2(pause_panel.size.x / 2 - 150, pause_panel.size.y / 2 - 150)
-	vbox.size = Vector2(300, 300)
-	pause_panel.add_child(vbox)
-	
-	var title = Label.new()
-	title.text = "PAUSED"
-	title.add_theme_font_size_override("font_size", 60)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(title)
-	
-	var spacer = Control.new()
-	spacer.custom_minimum_size = Vector2(0, 20)
-	vbox.add_child(spacer)
-	
-	var resume_btn = Button.new()
-	resume_btn.text = "Play"
-	resume_btn.custom_minimum_size = Vector2(300, 80)
-	resume_btn.add_theme_font_size_override("font_size", 40)
-	resume_btn.pressed.connect(resume_game)
-	vbox.add_child(resume_btn)
-	
-	var restart_btn = Button.new()
-	restart_btn.text = "Restart"
-	restart_btn.custom_minimum_size = Vector2(300, 80)
-	restart_btn.add_theme_font_size_override("font_size", 40)
-	restart_btn.pressed.connect(restart_game)
-	vbox.add_child(restart_btn)
-	
-	var quit_btn = Button.new()
-	quit_btn.text = "Quit"
-	quit_btn.custom_minimum_size = Vector2(300, 80)
-	quit_btn.add_theme_font_size_override("font_size", 40)
-	quit_btn.pressed.connect(quit_to_main)
-	vbox.add_child(quit_btn)
-
-func show_pause_menu():
-	get_tree().paused = true
-	var viewport_size = get_viewport_rect().size
-	if viewport_size != Vector2.ZERO:
-		pause_panel.size = viewport_size
-		var vbox = pause_panel.get_child(0)
-		vbox.position = Vector2(pause_panel.size.x / 2 - vbox.size.x / 2, pause_panel.size.y / 2 - vbox.size.y / 2)
-	pause_panel.show()
-
-func resume_game():
-	get_tree().paused = false
-	pause_panel.hide()
-
-func restart_game():
-	get_tree().paused = false
-	get_tree().reload_current_scene()
-
-func quit_to_main():
-	get_tree().paused = false
-	get_tree().change_scene_to_file("res://scene/main_menu.tscn")
+	print("Score updated - Total: %d, Phase: %d" % [total, phase])
