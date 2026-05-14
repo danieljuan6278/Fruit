@@ -9,24 +9,44 @@ class_name UIManager
 var game_state: GameState
 
 func _ready():
+	# Resolve node paths from scene
+	_resolve_node_paths()
 	# Initialize progress bar
 	if progress_bar:
 		progress_bar.min_value = 0
 		progress_bar.max_value = 1200  # Default for phase C
 		progress_bar.value = 0
-	
-	# Connect to game state signals
+
+func _resolve_node_paths():
+	"""Resolve node paths if they haven't been resolved yet"""
+	if not score_label:
+		score_label = get_node("../score_label/ScoreContainer/TextureRect/Label")
+	if not rank_label:
+		rank_label = get_node("../score_label/RankLabel")
+	if not moves_label:
+		moves_label = get_node("../score_label/MovesLabel")
+	if not progress_bar:
+		progress_bar = get_node("../score_label/ScoreProgress")
+
+func _setup_signal_connections():
+	"""Connect to game state signals"""
 	if game_state:
-		game_state.score_updated.connect(_on_score_updated)
-		game_state.moves_updated.connect(_on_moves_updated)
-		game_state.phase_changed.connect(_on_phase_changed)
-		game_state.combo_bonus.connect(_on_combo_bonus)
-		game_state.game_over.connect(_on_game_over)
+		if not game_state.score_updated.is_connected(_on_score_updated):
+			game_state.score_updated.connect(_on_score_updated)
+		if not game_state.moves_updated.is_connected(_on_moves_updated):
+			game_state.moves_updated.connect(_on_moves_updated)
+		if not game_state.phase_changed.is_connected(_on_phase_changed):
+			game_state.phase_changed.connect(_on_phase_changed)
+		if not game_state.combo_bonus.is_connected(_on_combo_bonus):
+			game_state.combo_bonus.connect(_on_combo_bonus)
+		if not game_state.game_over.is_connected(_on_game_over):
+			game_state.game_over.connect(_on_game_over)
 
 func set_game_state(state: GameState):
 	"""Set reference to game state"""
 	game_state = state
-	_ready()
+	_setup_signal_connections()
+	initialize_display()
 
 func _on_score_updated(total_score: int, phase_score: int):
 	"""Update score display"""
@@ -96,6 +116,9 @@ func _pulse_label(label: Label, color: Color = Color.GOLD):
 func initialize_display():
 	"""Initialize all UI displays"""
 	if game_state:
+		# First trigger the initial state signals
+		game_state.reset_phase()
+		
 		var info = game_state.get_current_phase_info()
 		if score_label:
 			score_label.text = "Score: " + str(info["total_score"])

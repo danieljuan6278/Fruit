@@ -98,7 +98,7 @@ theme_override_font_sizes/font_size = 30
 text = "Moves: 30"
 horizontal_alignment = 1
 
-[node name="UIManager" type="Node" parent="."]
+[node name="UIManager" type="Node" parent="." node_paths=PackedStringArray("score_label", "rank_label", "moves_label", "progress_bar")]
 script = ExtResource("1_jd5gt")
 score_label = NodePath("../score_label/ScoreContainer/TextureRect/Label")
 rank_label = NodePath("../score_label/RankLabel")

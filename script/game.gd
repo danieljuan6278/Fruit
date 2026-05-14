@@ -31,7 +31,6 @@ func _ready() -> void:
 	# Set UI manager's game state reference
 	if ui_manager:
 		ui_manager.set_game_state(game_state)
-		ui_manager.initialize_display()
 	
 	all_pieces = make_2d_array()
 	spawn_board()

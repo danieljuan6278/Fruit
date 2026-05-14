@@ -21,7 +21,7 @@ signal game_over(phase: String)
 signal combo_bonus(bonus_moves: int)
 
 func _ready():
-	reset_phase()
+	pass  # Don't initialize here - wait for connections to be set up
 
 func reset_phase():
 	"""Reset for new phase"""
