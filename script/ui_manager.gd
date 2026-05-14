@@ -55,6 +55,7 @@ var phase_themes: Array = [
 
 func _ready():
 	_resolve_node_paths()
+	_apply_rank_style()
 	if progress_bar:
 		progress_bar.min_value = 0
 		progress_bar.max_value = 1200
@@ -110,6 +111,8 @@ func _on_phase_changed(phase: String, moves: int):
 	"""Update rank display and apply color theme when phase changes"""
 	if rank_label:
 		rank_label.text = phase
+		_apply_rank_style()
+		_play_rank_transition()
 	
 	# Update progress bar for new phase
 	if progress_bar:
@@ -210,6 +213,29 @@ func _pulse_label(label: Label, color: Color = Color(1.0, 0.86, 0.25)):
 	tween.tween_property(label, "modulate", color, 0.1)
 	tween.chain().tween_property(label, "modulate", Color.WHITE, 0.2)
 
+func _apply_rank_style():
+	if not rank_label:
+		return
+	
+	# We set pivot_offset but let phase_theme handle the color
+	rank_label.pivot_offset = rank_label.size * 0.5
+
+func _play_rank_transition():
+	if not rank_label:
+		return
+	
+	rank_label.scale = Vector2(0.65, 0.65)
+	rank_label.modulate.a = 0.0
+	rank_label.pivot_offset = rank_label.size * 0.5
+	
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(rank_label, "modulate:a", 1.0, 0.08)
+	tween.tween_property(rank_label, "scale", Vector2(1.8, 1.8), 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	
+	tween.set_parallel(false)
+	tween.tween_property(rank_label, "scale", Vector2(1.0, 1.0), 0.16).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
 func initialize_display():
 	"""Initialize all UI displays"""
 	if game_state:
@@ -221,6 +247,7 @@ func initialize_display():
 			score_label.text = "Score: " + str(info["total_score"])
 		if rank_label:
 			rank_label.text = info["rank"]
+			_apply_rank_style()
 		if moves_label:
 			moves_label.text = "Moves: " + str(info["moves"])
 		if progress_bar:

@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://drridt7xjfkdc"]
+[gd_scene load_steps=2 format=3 uid="uid://drridt7xjfkdc"]
 
 [ext_resource type="Script" uid="uid://2b4r3r6rbklr" path="res://script/game.gd" id="1_5kiuu"]
 [ext_resource type="Script" uid="uid://fe83cslqc1hb" path="res://script/ui_manager.gd" id="1_jd5gt"]
@@ -27,6 +27,7 @@ script = ExtResource("1_5kiuu")
 grid_tile_scene = ExtResource("2_33cqm")
 piece_scene = ExtResource("2_dbls1")
 ui_manager = NodePath("UIManager")
+grid_position_offset = Vector2(30, 30)
 
 [node name="score_label" type="CanvasLayer" parent="." unique_id=335725367]
 
@@ -92,10 +93,10 @@ texture_progress = SubResource("AtlasTexture_17rxn")
 
 [node name="RankLabel" type="Label" parent="score_label" unique_id=1758124079]
 texture_filter = 1
-offset_left = -6.0
-offset_top = 79.0
-offset_right = 278.0
-offset_bottom = 209.0
+offset_left = 36.0
+offset_top = 110.0
+offset_right = 320.0
+offset_bottom = 240.0
 theme_override_colors/font_color = Color(1, 0.92, 0.2, 1)
 theme_override_colors/font_shadow_color = Color(0.15, 0.1, 0, 0.7)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -110,10 +111,10 @@ vertical_alignment = 1
 
 [node name="MovesLabel" type="Label" parent="score_label" unique_id=307979590]
 texture_filter = 1
-offset_left = 269.0
-offset_top = 96.0
-offset_right = 555.0
-offset_bottom = 226.0
+offset_left = 330.0
+offset_top = 110.0
+offset_right = 616.0
+offset_bottom = 240.0
 theme_override_colors/font_color = Color(0.85, 1, 0.75, 1)
 theme_override_colors/font_shadow_color = Color(0.05, 0.1, 0, 0.5)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
