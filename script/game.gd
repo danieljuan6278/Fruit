@@ -35,7 +35,7 @@ func _ready() -> void:
 	
 	var pause_menu = preload("res://scene/pause_menu.tscn").instantiate()
 	add_child(pause_menu)
-	game_state.game_over.connect(func(phase): pause_menu.show_game_over())
+	game_state.game_over.connect(func(_phase): pause_menu.show_game_over())
 	
 	all_pieces = make_2d_array()
 	spawn_board()
@@ -105,7 +105,7 @@ func get_piece_from_screen_pos(pos):
 		for j in height:
 			var p = all_pieces[i][j]
 			if p != null:
-				if pos.distance_to(p.position) < int(offset / 2):
+				if pos.distance_to(p.position) < int(offset / 2.0):
 					return p
 	return null
 
@@ -136,8 +136,8 @@ func swap_pieces(p1, p2):
 	all_pieces[g1.x][g1.y] = p2
 	all_pieces[g2.x][g2.y] = p1
 	var tween = create_tween().set_parallel(true)
-	tween.tween_property(p1, "position", p2_pos, 0.2).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(p2, "position", p1_pos, 0.2).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(p1, "position", p2_pos, 0.1).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(p2, "position", p1_pos, 0.1).set_trans(Tween.TRANS_SINE)
 	await tween.finished
 	
 	game_state.match_count = 0  # Reset for this turn
@@ -149,8 +149,8 @@ func swap_pieces(p1, p2):
 		all_pieces[g1.x][g1.y] = p1
 		all_pieces[g2.x][g2.y] = p2
 		var tween_back = create_tween().set_parallel(true)
-		tween_back.tween_property(p1, "position", p1_pos, 0.2).set_trans(Tween.TRANS_SINE)
-		tween_back.tween_property(p2, "position", p2_pos, 0.2).set_trans(Tween.TRANS_SINE)
+		tween_back.tween_property(p1, "position", p1_pos, 0.1).set_trans(Tween.TRANS_SINE)
+		tween_back.tween_property(p2, "position", p2_pos, 0.1).set_trans(Tween.TRANS_SINE)
 		await tween_back.finished
 	is_swapping = false 
 
@@ -215,6 +215,10 @@ func calculate_score(count: int):
 		bonus = 80
 	
 	var total_points = base_points + bonus
+	
+	if game_state.match_count >= 3:
+		total_points += 50 + (game_state.match_count - 3) * 10
+		
 	if game_state.add_score(total_points):
 		# Phase target reached, advance when animations finish
 		await get_tree().create_timer(0.5).timeout
