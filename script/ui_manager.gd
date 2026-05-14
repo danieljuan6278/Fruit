@@ -70,16 +70,7 @@ func _on_phase_changed(phase: String, moves: int):
 	
 	# Update progress bar for new phase
 	if progress_bar:
-		var target = 0
-		match phase:
-			"C": target = 1200
-			"B": target = 2200
-			"A": target = 3200
-			"S": target = 4200
-			"S+": target = 999999  # Unlimited
-		
-		progress_bar.max_value = target
-		progress_bar.value = 0
+		progress_bar.max_value = 1200
 
 func _on_combo_bonus(bonus_moves: int):
 	"""Show combo bonus feedback"""
@@ -127,4 +118,5 @@ func initialize_display():
 		if moves_label:
 			moves_label.text = "Moves: " + str(info["moves"])
 		if progress_bar:
+			progress_bar.max_value = info["phase_size"]
 			progress_bar.value = info["phase_score"]
