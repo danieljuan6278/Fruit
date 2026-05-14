@@ -2,19 +2,18 @@ extends Node2D
 
 @export var grid_tile_scene: PackedScene
 @export var piece_scene: PackedScene
-@export var score_label: Label 
+@export var ui_manager: UIManager
 
 @export var width: int = 8
 @export var height: int = 10
 @export var x_start: int = 65
 @export var y_start: int = 1000
 @export var offset: int = 80
-@export var score_checkpoint: int = 500
-@onready var progress_bar = $score_label/ScoreProgress
 
+var game_state: GameState
 var fruits = ["black", "red", "green", "yellow", "orange"]
 var all_pieces = []
-var score: int = 0
+var combo_positions: Array = []  # Track positions of destroyed pieces for combo display
 
 var first_piece = null
 var is_swapping = false 
@@ -22,14 +21,22 @@ var touch_start_pos = Vector2.ZERO
 var swipe_threshold = 50 
 
 func _ready() -> void:
-	if progress_bar:
-		progress_bar.min_value = 0
-		progress_bar.max_value = score_checkpoint
-		progress_bar.value = 0
-		
+	# Initialize game state
+	game_state = GameState.new()
+	add_child(game_state)
+	
+	# Connect game state signals
+	game_state.phase_changed.connect(_on_phase_advance)
+	game_state.score_updated.connect(_on_score_updated)
+	
+	# Set UI manager's game state reference
+	if ui_manager:
+		ui_manager.set_game_state(game_state)
+	
+	setup_pause_menu()
+	
 	all_pieces = make_2d_array()
 	spawn_board()
-	update_score_display()
 
 func make_2d_array():
 	var array = []
@@ -130,14 +137,20 @@ func swap_pieces(p1, p2):
 	tween.tween_property(p1, "position", p2_pos, 0.2).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(p2, "position", p1_pos, 0.2).set_trans(Tween.TRANS_SINE)
 	await tween.finished
-	if not find_matches():
+	
+	game_state.match_count = 0  # Reset for this turn
+	if find_matches():
+		if game_state.use_move():  # Deduct move only if successful match
+			pass
+	else:
+		# Swap back if no matches
 		all_pieces[g1.x][g1.y] = p1
 		all_pieces[g2.x][g2.y] = p2
 		var tween_back = create_tween().set_parallel(true)
 		tween_back.tween_property(p1, "position", p1_pos, 0.2).set_trans(Tween.TRANS_SINE)
 		tween_back.tween_property(p2, "position", p2_pos, 0.2).set_trans(Tween.TRANS_SINE)
 		await tween_back.finished
-		is_swapping = false 
+	is_swapping = false 
 
 func find_matches() -> bool:
 	var found_match = false
@@ -165,15 +178,25 @@ func find_matches() -> bool:
 	return found_match
 
 func destroy_matches():
+	game_state.increment_matches()
 	var destroyed_count = 0
+	var avg_pos = Vector2.ZERO
 	for i in width:
 		for j in height:
 			if all_pieces[i][j] != null and all_pieces[i][j].is_matched:
+				avg_pos += all_pieces[i][j].global_position
 				destroyed_count += 1
 				all_pieces[i][j].queue_free()
 				all_pieces[i][j] = null
 	
 	if destroyed_count > 0:
+		avg_pos /= destroyed_count
+		if game_state.match_count >= 3:
+			var combo_display = preload("res://script/combo_display.gd").new()
+			combo_display.text = "Combo" # Just "Combo" per user instructions
+			add_child(combo_display)
+			combo_display.show_combo_at(avg_pos, game_state.match_count)
+			
 		calculate_score(destroyed_count)
 	
 	await get_tree().create_timer(0.2).timeout
@@ -188,8 +211,12 @@ func calculate_score(count: int):
 		bonus = 40
 	elif count >= 6:
 		bonus = 80
-	score += (base_points + bonus)
-	update_score_display()
+	
+	var total_points = base_points + bonus
+	if game_state.add_score(total_points):
+		# Phase target reached, advance when animations finish
+		await get_tree().create_timer(0.5).timeout
+		game_state.advance_phase()
 
 func collapse_columns():
 	for i in width:
@@ -218,32 +245,106 @@ func refill_columns():
 				create_tween().tween_property(piece, "position", end_pos, 0.3).set_trans(Tween.TRANS_SINE)
 	await get_tree().create_timer(0.4).timeout
 	if not find_matches():
-		is_swapping = false 
+		is_swapping = false
+		# Check for combo bonus in S+ phase
+		game_state.check_combo_bonus()
 
-func update_score_display():
+func _on_phase_advance(phase: String, moves: int):
+	"""Called when phase changes"""
+	print("Advanced to phase: %s with %d moves" % [phase, moves])
+
+func _on_score_updated(total: int, phase: int):
+	"""Called when score updates"""
+	print("Score updated - Total: %d, Phase: %d" % [total, phase])	
+
+# --- PAUSE MENU LOGIC ---
+var pause_panel: ColorRect
+
+func setup_pause_menu():
+	var canvas = CanvasLayer.new()
+	canvas.layer = 100 # Put it on top
+	canvas.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(canvas)
 	
-	if score_label:
-		score_label.text = "Score: " + str(score)
-		score_label.add_theme_font_size_override("font_size", 50)
-		# --- Added Visual Juice ---
-		# This makes the score board "pulse" when points are added
-		var scoreboard_ui = score_label.get_parent() # Assuming Label is child of TextureRect
-		var score_tween = create_tween()
-		
-		# Scale up slightly and turn gold, then back to normal
-		score_tween.tween_property(scoreboard_ui, "scale", Vector2(1.1, 1.1), 0.1)
-		score_tween.tween_property(scoreboard_ui, "modulate", Color.GOLD, 0.1)
-		
-		score_tween.chain().tween_property(scoreboard_ui, "scale", Vector2(1.0, 1.0), 0.2)
-		score_tween.tween_property(scoreboard_ui, "modulate", Color.WHITE, 0.2)
-
-	if progress_bar:
-		print("Updating bar: ", score)
-		var bar_tween = create_tween()
-		bar_tween.tween_property(progress_bar, "value", score, 0.5).set_trans(Tween.TRANS_SINE)
+	# Pause button on HUD
+	var pause_btn = Button.new()
+	pause_btn.text = "||" # Pause icon or text
+	pause_btn.add_theme_font_size_override("font_size", 40)
 	
-	if score >= score_checkpoint:
-		reach_checkpoint()
+	# For mobile, it's nice to have it in the top corner. Since width is 8 * 80 = 640 approx, x=600 is good
+	pause_btn.position = Vector2(600, 20)
+	pause_btn.size = Vector2(80, 80)
+	pause_btn.pressed.connect(show_pause_menu)
+	canvas.add_child(pause_btn)
+	
+	# Pause panel
+	pause_panel = ColorRect.new()
+	pause_panel.color = Color(0, 0, 0, 0.7)
+	pause_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	# Size manually since anchors might be tricky if parent isn't a Control
+	var viewport_size = get_viewport_rect().size
+	pause_panel.size = viewport_size
+	if viewport_size == Vector2.ZERO:
+		pause_panel.size = Vector2(720, 1280) # Fallback size
+		
+	pause_panel.hide()
+	canvas.add_child(pause_panel)
+	
+	var vbox = VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_CENTER)
+	vbox.add_theme_constant_override("separation", 20)
+	vbox.position = Vector2(pause_panel.size.x / 2 - 150, pause_panel.size.y / 2 - 150)
+	vbox.size = Vector2(300, 300)
+	pause_panel.add_child(vbox)
+	
+	var title = Label.new()
+	title.text = "PAUSED"
+	title.add_theme_font_size_override("font_size", 60)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+	
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 20)
+	vbox.add_child(spacer)
+	
+	var resume_btn = Button.new()
+	resume_btn.text = "Play"
+	resume_btn.custom_minimum_size = Vector2(300, 80)
+	resume_btn.add_theme_font_size_override("font_size", 40)
+	resume_btn.pressed.connect(resume_game)
+	vbox.add_child(resume_btn)
+	
+	var restart_btn = Button.new()
+	restart_btn.text = "Restart"
+	restart_btn.custom_minimum_size = Vector2(300, 80)
+	restart_btn.add_theme_font_size_override("font_size", 40)
+	restart_btn.pressed.connect(restart_game)
+	vbox.add_child(restart_btn)
+	
+	var quit_btn = Button.new()
+	quit_btn.text = "Quit"
+	quit_btn.custom_minimum_size = Vector2(300, 80)
+	quit_btn.add_theme_font_size_override("font_size", 40)
+	quit_btn.pressed.connect(quit_to_main)
+	vbox.add_child(quit_btn)
 
-func reach_checkpoint():
-	print("Level Complete or Checkpoint Reached!")	
+func show_pause_menu():
+	get_tree().paused = true
+	var viewport_size = get_viewport_rect().size
+	if viewport_size != Vector2.ZERO:
+		pause_panel.size = viewport_size
+		var vbox = pause_panel.get_child(0)
+		vbox.position = Vector2(pause_panel.size.x / 2 - vbox.size.x / 2, pause_panel.size.y / 2 - vbox.size.y / 2)
+	pause_panel.show()
+
+func resume_game():
+	get_tree().paused = false
+	pause_panel.hide()
+
+func restart_game():
+	get_tree().paused = false
+	get_tree().reload_current_scene()
+
+func quit_to_main():
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://scene/main_menu.tscn")
