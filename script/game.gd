@@ -18,7 +18,7 @@ const BoardGridScript = preload("res://script/board_grid.gd")
 
 @export var width: int = 8
 @export var height: int = 10
-@export var x_start: int = 60
+@export var x_start: int = 50
 @export var y_start: int = 1000
 @export var offset: int = 80
 @export_group("Grid Lines")

@@ -90,10 +90,10 @@ text = "C"
 horizontal_alignment = 1
 
 [node name="MovesLabel" type="Label" parent="score_label" unique_id=307979590]
-offset_left = 297.0
-offset_top = 40.0
-offset_right = 544.0
-offset_bottom = 81.0
+offset_left = 37.0
+offset_top = 149.0
+offset_right = 284.0
+offset_bottom = 190.0
 theme_override_fonts/font = ExtResource("5_p1ry8")
 theme_override_font_sizes/font_size = 30
 text = "Moves: 30"
