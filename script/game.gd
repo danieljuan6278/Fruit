@@ -3,14 +3,23 @@ extends Node2D
 @export var grid_tile_scene: PackedScene
 @export var piece_scene: PackedScene
 @export var score_label: Label 
+@export var rank_label: Label
+@export var moves_label: Label 
 
 @export var width: int = 8
 @export var height: int = 10
 @export var x_start: int = 65
 @export var y_start: int = 1000
 @export var offset: int = 80
-@export var score_checkpoint: int = 500
 @onready var progress_bar = $score_label/ScoreProgress
+
+var current_phase: int = 0
+var phases: Array = ["C", "B", "A", "S", "S+"]
+var phase_targets: Array = [1200, 2200, 3200, 4200, 0]  # 0 for unlimited in S+
+var phase_moves: Array = [30, 25, 20, 15, 10]
+var moves_left: int = 30
+var total_score: int = 0  # Cumulative score across phases
+var match_count: int = 0  # For combo bonus in S+
 
 var fruits = ["black", "red", "green", "yellow", "orange"]
 var all_pieces = []
@@ -24,12 +33,14 @@ var swipe_threshold = 50
 func _ready() -> void:
 	if progress_bar:
 		progress_bar.min_value = 0
-		progress_bar.max_value = score_checkpoint
+		progress_bar.max_value = phase_targets[current_phase]
 		progress_bar.value = 0
 		
 	all_pieces = make_2d_array()
 	spawn_board()
 	update_score_display()
+	update_rank_display()
+	update_moves_display()
 
 func make_2d_array():
 	var array = []
@@ -130,14 +141,20 @@ func swap_pieces(p1, p2):
 	tween.tween_property(p1, "position", p2_pos, 0.2).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(p2, "position", p1_pos, 0.2).set_trans(Tween.TRANS_SINE)
 	await tween.finished
-	if not find_matches():
+	match_count = 0  # Reset for this turn
+	if find_matches():
+		moves_left -= 1  # Only count if score made
+		update_moves_display()
+		check_game_over()
+	else:
+		# Swap back if no matches
 		all_pieces[g1.x][g1.y] = p1
 		all_pieces[g2.x][g2.y] = p2
 		var tween_back = create_tween().set_parallel(true)
 		tween_back.tween_property(p1, "position", p1_pos, 0.2).set_trans(Tween.TRANS_SINE)
 		tween_back.tween_property(p2, "position", p2_pos, 0.2).set_trans(Tween.TRANS_SINE)
 		await tween_back.finished
-		is_swapping = false 
+	is_swapping = false 
 
 func find_matches() -> bool:
 	var found_match = false
@@ -165,6 +182,7 @@ func find_matches() -> bool:
 	return found_match
 
 func destroy_matches():
+	match_count += 1
 	var destroyed_count = 0
 	for i in width:
 		for j in height:
@@ -188,8 +206,12 @@ func calculate_score(count: int):
 		bonus = 40
 	elif count >= 6:
 		bonus = 80
-	score += (base_points + bonus)
+	total_score += (base_points + bonus)  # Add to total score
+	score += (base_points + bonus)  # Phase score for progress bar
 	update_score_display()
+	
+	if current_phase < 4 and score >= phase_targets[current_phase]:
+		reach_checkpoint()
 
 func collapse_columns():
 	for i in width:
@@ -218,12 +240,16 @@ func refill_columns():
 				create_tween().tween_property(piece, "position", end_pos, 0.3).set_trans(Tween.TRANS_SINE)
 	await get_tree().create_timer(0.4).timeout
 	if not find_matches():
-		is_swapping = false 
+		is_swapping = false
+		# Bonus move for combos in S+
+		if current_phase == 4 and match_count >= 2:
+			moves_left += 1
+			update_moves_display()
+			print("Combo Bonus! +1 Move")
 
 func update_score_display():
-	
 	if score_label:
-		score_label.text = "Score: " + str(score)
+		score_label.text = "Score: " + str(total_score)
 		score_label.add_theme_font_size_override("font_size", 50)
 		# --- Added Visual Juice ---
 		# This makes the score board "pulse" when points are added
@@ -241,9 +267,26 @@ func update_score_display():
 		print("Updating bar: ", score)
 		var bar_tween = create_tween()
 		bar_tween.tween_property(progress_bar, "value", score, 0.5).set_trans(Tween.TRANS_SINE)
-	
-	if score >= score_checkpoint:
-		reach_checkpoint()
 
 func reach_checkpoint():
-	print("Level Complete or Checkpoint Reached!")	
+	current_phase += 1
+	score = 0  # Reset phase score
+	progress_bar.max_value = phase_targets[current_phase] if current_phase < 4 else 999999  # Unlimited for S+
+	progress_bar.value = 0
+	moves_left = phase_moves[current_phase]
+	update_rank_display()
+	update_moves_display()
+	print("Phase Complete! Advanced to " + phases[current_phase])
+
+func update_rank_display():
+	if rank_label:
+		rank_label.text = phases[current_phase]
+
+func update_moves_display():
+	if moves_label:
+		moves_label.text = "Moves: " + str(moves_left)
+
+func check_game_over():
+	if moves_left <= 0 and current_phase < 4:
+		print("Game Over! Out of moves.")
+		# Add game over logic here (e.g., show a screen or restart)	

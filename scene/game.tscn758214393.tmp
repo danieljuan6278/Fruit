@@ -30,8 +30,8 @@ x_start = null
 y_start = null
 offset = null
 score_label = NodePath("score_label/ScoreContainer/TextureRect/Label")
-rank_label = NodePath("score_label/RankLabel")
-moves_label = NodePath("score_label/MovesLabel")
+rank_label = NodePath("score_label/ScoreProgress/RankLabel")
+moves_label = NodePath("score_label/ScoreContainer/MovesLabel")
 
 [node name="score_label" type="CanvasLayer" parent="."]
 
@@ -73,6 +73,17 @@ vertical_alignment = 1
 autowrap_mode = 3
 uppercase = true
 
+[node name="MovesLabel" type="Label" parent="score_label/ScoreContainer"]
+layout_mode = 0
+offset_left = 468.0
+offset_top = 27.0
+offset_right = 715.0
+offset_bottom = 68.0
+theme_override_fonts/font = ExtResource("5_p1ry8")
+theme_override_font_sizes/font_size = 30
+text = "Moves: 30"
+horizontal_alignment = 1
+
 [node name="ScoreProgress" type="TextureProgressBar" parent="score_label"]
 texture_filter = 1
 offset_left = 46.0
@@ -84,22 +95,13 @@ nine_patch_stretch = true
 texture_over = ExtResource("7_qpk70")
 texture_progress = SubResource("AtlasTexture_17rxn")
 
-[node name="RankLabel" type="Label" parent="score_label"]
-offset_left = 46.0
-offset_top = 140.0
-offset_right = 293.0
-offset_bottom = 170.0
+[node name="RankLabel" type="Label" parent="score_label/ScoreProgress"]
+layout_mode = 0
+offset_left = 422.0
+offset_top = -26.0
+offset_right = 669.0
+offset_bottom = 5.0
 theme_override_fonts/font = ExtResource("5_p1ry8")
 theme_override_font_sizes/font_size = 30
 text = "C"
-horizontal_alignment = 1
-
-[node name="MovesLabel" type="Label" parent="score_label"]
-offset_left = 46.0
-offset_top = 170.0
-offset_right = 293.0
-offset_bottom = 200.0
-theme_override_fonts/font = ExtResource("5_p1ry8")
-theme_override_font_sizes/font_size = 30
-text = "Moves: 30"
 horizontal_alignment = 1
