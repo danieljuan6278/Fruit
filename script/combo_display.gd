@@ -11,7 +11,7 @@ func _ready():
 	horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
-func show_combo_at(position: Vector2, combo_count: int = ):
+func show_combo_at(position: Vector2, combo_count: int = 3):
 	"""Show combo notification at given position"""
 	self.global_position = position - size / 2
 	text = "Combo"
