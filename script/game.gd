@@ -19,7 +19,7 @@ const BoardGridScript = preload("res://script/board_grid.gd")
 @export var width: int = 8
 @export var height: int = 10
 @export var x_start: int = 50
-@export var y_start: int = 1000
+@export var y_start: int = 1040
 @export var offset: int = 80
 @export_group("Grid Lines")
 @export var grid_line_color: Color = Color(0.0, 0.449, 0.0, 0.651)
@@ -54,7 +54,10 @@ func _ready() -> void:
 	
 	var pause_menu = preload("res://scene/pause_menu.tscn").instantiate()
 	add_child(pause_menu)
-	game_state.game_over.connect(func(_phase): pause_menu.show_game_over())
+	game_state.game_over.connect(func(_phase): 
+		AudioManager.play_game_over()
+		pause_menu.show_game_over()
+	)
 	
 	all_pieces = make_2d_array()
 	draw_grid_lines()
@@ -168,10 +171,12 @@ func swap_pieces(p1, p2):
 	
 	game_state.match_count = 0  # Reset for this turn
 	if find_matches():
+		AudioManager.play_success()
 		if game_state.use_move():  # Deduct move only if successful match
 			pass
 		# is_swapping is set to false in refill_columns() once all cascades are finished
 	else:
+		AudioManager.play_failed()
 		# Swap back if no matches
 		all_pieces[g1.x][g1.y] = p1
 		all_pieces[g2.x][g2.y] = p2
@@ -221,6 +226,7 @@ func destroy_matches():
 	if destroyed_count > 0:
 		avg_pos /= destroyed_count
 		if game_state.match_count >= 3:
+			AudioManager.play_combo()
 			var combo_display = preload("res://script/combo_display.gd").new()
 			combo_display.apply_preset(
 				combo_font,
