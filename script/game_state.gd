@@ -4,13 +4,13 @@ class_name GameState
 # Phase progression system
 var current_phase: int = 0
 var phases: Array = ["C", "B", "A", "S", "S+"]
-var phase_targets: Array = [1200, 2400, 3600, 4280, 6000, 0]  # 0 for unlimited in S+
+var phase_targets: Array = [1200, 2400, 3600, 4800, 0]  # Total score ceilings; 0 for unlimited in S+
 var phase_moves: Array = [30, 25, 20, 15, 10]
 
 # Score and moves tracking
 var moves_left: int = 30
 var total_score: int = 0  # Cumulative score across phases
-var phase_score: int = 0  # Score for current phase (resets each phase)
+var phase_score: int = 0  # Progress inside current score band
 var match_count: int = 0  # For combo bonus in S+
 
 # Signals for other systems to listen to
@@ -25,7 +25,7 @@ func _ready():
 
 func reset_phase():
 	"""Reset for new phase"""
-	phase_score = 0
+	phase_score = get_phase_progress()
 	moves_left = phase_moves[current_phase]
 	match_count = 0
 	score_updated.emit(total_score, phase_score)
@@ -34,11 +34,11 @@ func reset_phase():
 func add_score(points: int) -> bool:
 	"""Add score and return true if phase target reached"""
 	total_score += points
-	phase_score += points
+	phase_score = get_phase_progress()
 	score_updated.emit(total_score, phase_score)
 	
 	# Check if phase target reached
-	if current_phase < 4 and phase_score >= phase_targets[current_phase]:
+	if current_phase < 4 and total_score > phase_targets[current_phase]:
 		return true
 	return false
 
@@ -60,8 +60,8 @@ func increment_matches():
 func check_combo_bonus() -> int:
 	"""Check if combo bonus should be awarded in S+ phase"""
 	var bonus = 0
-	if current_phase == 4 and match_count >= 2:
-		bonus = 1
+	if current_phase == 4 and match_count >= 3:
+		bonus = match_count - 2
 		moves_left += bonus
 		combo_bonus.emit(bonus)
 		moves_updated.emit(moves_left)
@@ -70,7 +70,8 @@ func check_combo_bonus() -> int:
 func advance_phase():
 	"""Move to next phase"""
 	if current_phase < 4:
-		current_phase += 1
+		while current_phase < 4 and total_score > phase_targets[current_phase]:
+			current_phase += 1
 		reset_phase()
 		phase_changed.emit(phases[current_phase], moves_left)
 
@@ -81,8 +82,24 @@ func get_current_phase_info() -> Dictionary:
 		"target": phase_targets[current_phase],
 		"moves": moves_left,
 		"total_score": total_score,
-		"phase_score": phase_score
+		"phase_score": get_phase_progress(),
+		"phase_size": get_phase_size()
 	}
+
+func get_phase_floor() -> int:
+	if current_phase <= 0:
+		return 0
+	return phase_targets[current_phase - 1]
+
+func get_phase_size() -> int:
+	if current_phase >= 4:
+		return 1200
+	return phase_targets[current_phase] - get_phase_floor()
+
+func get_phase_progress() -> int:
+	if current_phase >= 4:
+		return 0
+	return clamp(total_score - get_phase_floor(), 0, get_phase_size())
 
 func reset_game():
 	"""Reset entire game"""
