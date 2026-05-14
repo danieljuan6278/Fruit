@@ -4,7 +4,7 @@ class_name GameState
 # Phase progression system
 var current_phase: int = 0
 var phases: Array = ["C", "B", "A", "S", "S+"]
-var phase_targets: Array = [1200, 2200, 3200, 4200, 0]  # 0 for unlimited in S+
+var phase_targets: Array = [1200, 2400, 3600, 4280, 6000, 0]  # 0 for unlimited in S+
 var phase_moves: Array = [30, 25, 20, 15, 10]
 
 # Score and moves tracking

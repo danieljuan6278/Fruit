@@ -251,7 +251,7 @@ func play_falling_leaves_phase_effect():
 	add_child(leaves)
 	
 	var viewport_size = get_viewport_rect().size
-	var random_x = randf_range(40.0, max(40.0, viewport_size.x - 40.0))
+	var random_x = randf_range(viewport_size.x * 0.35, viewport_size.x * 0.65)
 	leaves.global_position = Vector2(random_x, -80.0)
 	leaves.z_index = 100
 	
