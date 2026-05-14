@@ -1,29 +1,68 @@
-[gd_scene load_steps=2 format=3 uid="uid://dda455uj38eus"]
+[gd_scene format=3 uid="uid://dda455uj38eus"]
 
-[ext_resource type="Script" path="res://script/pause_menu.gd" id="1_pausemenu"]
+[ext_resource type="Script" uid="uid://boukje07ap1v" path="res://script/pause_menu.gd" id="1_pausemenu"]
+[ext_resource type="Texture2D" uid="uid://bxyuxjlwd6tmn" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/Sprite sheet for Basic Pack2.png" id="2_cq4tv"]
+[ext_resource type="Texture2D" uid="uid://ja6sbwjaiyat" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/resumebutton.png" id="2_me6vf"]
+[ext_resource type="Texture2D" uid="uid://ccmeheycq6bj6" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/restart pause.png" id="4_qbwph"]
+[ext_resource type="Texture2D" uid="uid://ba28injmkmvq2" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/UI Big Play Button-58c8.png" id="4_ug2vv"]
 
-[node name="PauseMenu" type="CanvasLayer"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_ug2vv"]
+atlas = ExtResource("2_cq4tv")
+region = Rect2(645, 68, 22, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_et5lo"]
+atlas = ExtResource("2_cq4tv")
+region = Rect2(677, 70, 22, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cq4tv"]
+atlas = ExtResource("2_me6vf")
+region = Rect2(18, 0, 540, 162)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r1gbo"]
+atlas = ExtResource("2_me6vf")
+region = Rect2(594, 12, 540, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4q2vw"]
+atlas = ExtResource("4_qbwph")
+region = Rect2(18, 0, 540, 162)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_71u2q"]
+atlas = ExtResource("4_qbwph")
+region = Rect2(594, 12, 540, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qbwph"]
+atlas = ExtResource("4_ug2vv")
+region = Rect2(18, 0, 540, 162)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xugnn"]
+atlas = ExtResource("4_ug2vv")
+region = Rect2(594, 12, 540, 150)
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=1044010760]
 process_mode = 3
 layer = 100
 script = ExtResource("1_pausemenu")
 
-[node name="PauseButton" type="Button" parent="."]
-offset_left = 600.0
-offset_top = 20.0
-offset_right = 680.0
-offset_bottom = 100.0
-theme_override_font_sizes/font_size = 40
-text = "||"
+[node name="PauseButton" type="TextureButton" parent="." unique_id=239840653]
+texture_filter = 1
+offset_left = 637.0
+offset_top = 28.000002
+offset_right = 659.0
+offset_bottom = 52.000004
+scale = Vector2(2.6494124, 2.4705193)
+size_flags_horizontal = 4
+texture_normal = SubResource("AtlasTexture_ug2vv")
+texture_pressed = SubResource("AtlasTexture_et5lo")
 
-[node name="Overlay" type="ColorRect" parent="."]
+[node name="Overlay" type="ColorRect" parent="." unique_id=433400094]
 visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.7)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Overlay"]
-anchors_preset = 8
+[node name="VBoxContainer" type="VBoxContainer" parent="Overlay" unique_id=1827944091]
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -34,30 +73,42 @@ offset_right = 150.0
 offset_bottom = 150.0
 theme_override_constants/separation = 20
 
-[node name="Title" type="Label" parent="Overlay/VBoxContainer"]
+[node name="Title" type="Label" parent="Overlay/VBoxContainer" unique_id=1500184295]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
 text = "PAUSED"
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="Overlay/VBoxContainer"]
+[node name="Spacer" type="Control" parent="Overlay/VBoxContainer" unique_id=1168297289]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
-[node name="ResumeButton" type="Button" parent="Overlay/VBoxContainer"]
-custom_minimum_size = Vector2(300, 80)
+[node name="ResumeButton" type="TextureButton" parent="Overlay/VBoxContainer" unique_id=1383142718]
+texture_filter = 1
+custom_minimum_size = Vector2(240, 70)
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Play"
+size_flags_horizontal = 4
+texture_normal = SubResource("AtlasTexture_cq4tv")
+texture_pressed = SubResource("AtlasTexture_r1gbo")
+ignore_texture_size = true
+stretch_mode = 5
 
-[node name="RestartButton" type="Button" parent="Overlay/VBoxContainer"]
-custom_minimum_size = Vector2(300, 80)
+[node name="RestartButton" type="TextureButton" parent="Overlay/VBoxContainer" unique_id=677871229]
+texture_filter = 1
+custom_minimum_size = Vector2(240, 70)
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Restart"
+size_flags_horizontal = 4
+texture_normal = SubResource("AtlasTexture_4q2vw")
+texture_pressed = SubResource("AtlasTexture_71u2q")
+ignore_texture_size = true
+stretch_mode = 5
 
-[node name="QuitButton" type="Button" parent="Overlay/VBoxContainer"]
-custom_minimum_size = Vector2(300, 80)
+[node name="QuitButton" type="TextureButton" parent="Overlay/VBoxContainer" unique_id=1703415205]
+texture_filter = 1
+custom_minimum_size = Vector2(240, 70)
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Quit"
+size_flags_horizontal = 4
+texture_normal = SubResource("AtlasTexture_qbwph")
+texture_pressed = SubResource("AtlasTexture_xugnn")
+ignore_texture_size = true
+stretch_mode = 5

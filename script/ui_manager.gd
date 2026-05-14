@@ -76,7 +76,7 @@ func _on_combo_bonus(bonus_moves: int):
 	"""Show combo bonus feedback"""
 	print("Combo Bonus! +%d Move(s)" % bonus_moves)
 	if moves_label:
-		_pulse_label(moves_label, Color.GREEN)
+		_pulse_label(moves_label, Color(0.55, 0.9, 0.35))
 
 func _on_game_over(phase: String):
 	"""Handle game over"""
@@ -91,11 +91,11 @@ func _pulse_score_label():
 	var scoreboard_ui = score_label.get_parent()
 	var tween = create_tween()
 	tween.tween_property(scoreboard_ui, "scale", Vector2(1.1, 1.1), 0.1)
-	tween.tween_property(scoreboard_ui, "modulate", Color.GOLD, 0.1)
+	tween.tween_property(scoreboard_ui, "modulate", Color(1.0, 0.86, 0.25), 0.1)
 	tween.chain().tween_property(scoreboard_ui, "scale", Vector2(1.0, 1.0), 0.2)
 	tween.tween_property(scoreboard_ui, "modulate", Color.WHITE, 0.2)
 
-func _pulse_label(label: Label, color: Color = Color.GOLD):
+func _pulse_label(label: Label, color: Color = Color(1.0, 0.86, 0.25)):
 	"""Generic label pulse animation"""
 	if not label:
 		return
