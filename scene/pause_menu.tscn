@@ -75,6 +75,7 @@ offset_bottom = 150.0
 theme_override_constants/separation = 20
 
 [node name="Title" type="Label" parent="Overlay/VBoxContainer" unique_id=1500184295]
+texture_filter = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.92, 0.2, 1)
 theme_override_colors/font_shadow_color = Color(0.15, 0.1, 0.0, 0.7)
