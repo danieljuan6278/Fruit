@@ -1,7 +1,6 @@
-[gd_scene load_steps=13 format=3 uid="uid://drridt7xjfkdc"]
+[gd_scene load_steps=12 format=3 uid="uid://drridt7xjfkdc"]
 
 [ext_resource type="Script" uid="uid://2b4r3r6rbklr" path="res://script/game.gd" id="1_5kiuu"]
-[ext_resource type="Script" uid="uid://fe83cslqc1hb" path="res://script/ui_manager.gd" id="1_jd5gt"]
 [ext_resource type="PackedScene" uid="uid://8lywxxufxfsh" path="res://scene/grid_tile.tscn" id="2_33cqm"]
 [ext_resource type="PackedScene" uid="uid://d0vt4lr2qrn64" path="res://scene/piece.tscn" id="2_dbls1"]
 [ext_resource type="FontFile" uid="uid://b7r3gd2h62crf" path="res://assets/arcadeclassic/ARCADECLASSIC.TTF" id="5_p1ry8"]
@@ -21,11 +20,18 @@ font_size = 42
 [sub_resource type="AtlasTexture" id="AtlasTexture_17rxn"]
 atlas = ExtResource("6_xlg7c")
 
-[node name="Game" type="Node2D" node_paths=PackedStringArray("ui_manager")]
+[node name="Game" type="Node2D" node_paths=PackedStringArray("score_label", "rank_label", "moves_label")]
 script = ExtResource("1_5kiuu")
 grid_tile_scene = ExtResource("2_33cqm")
 piece_scene = ExtResource("2_dbls1")
-ui_manager = NodePath("UIManager")
+width = null
+height = null
+x_start = null
+y_start = null
+offset = null
+score_label = NodePath("score_label/ScoreContainer/TextureRect/Label")
+rank_label = NodePath("score_label/ScoreProgress/RankLabel")
+moves_label = NodePath("score_label/ScoreContainer/MovesLabel")
 
 [node name="score_label" type="CanvasLayer" parent="."]
 
@@ -67,40 +73,35 @@ vertical_alignment = 1
 autowrap_mode = 3
 uppercase = true
 
-[node name="ScoreProgress" type="TextureProgressBar" parent="score_label"]
-texture_filter = 1
-offset_left = 318.0
-offset_top = 40.0
-offset_right = 565.0
-offset_bottom = 78.0
-max_value = 1200.0
-nine_patch_stretch = true
-texture_over = ExtResource("7_qpk70")
-texture_progress = SubResource("AtlasTexture_17rxn")
-
-[node name="RankLabel" type="Label" parent="score_label"]
-offset_left = 315.0
-offset_top = 121.0
-offset_right = 562.0
-offset_bottom = 152.0
-theme_override_fonts/font = ExtResource("5_p1ry8")
-theme_override_font_sizes/font_size = 30
-text = "C"
-horizontal_alignment = 1
-
-[node name="MovesLabel" type="Label" parent="score_label"]
-offset_left = 42.0
-offset_top = 114.0
-offset_right = 289.0
-offset_bottom = 155.0
+[node name="MovesLabel" type="Label" parent="score_label/ScoreContainer"]
+layout_mode = 0
+offset_left = 468.0
+offset_top = 27.0
+offset_right = 715.0
+offset_bottom = 68.0
 theme_override_fonts/font = ExtResource("5_p1ry8")
 theme_override_font_sizes/font_size = 30
 text = "Moves: 30"
 horizontal_alignment = 1
 
-[node name="UIManager" type="Node" parent="." node_paths=PackedStringArray("score_label", "rank_label", "moves_label", "progress_bar")]
-script = ExtResource("1_jd5gt")
-score_label = NodePath("../score_label/ScoreContainer/TextureRect/Label")
-rank_label = NodePath("../score_label/RankLabel")
-moves_label = NodePath("../score_label/MovesLabel")
-progress_bar = NodePath("../score_label/ScoreProgress")
+[node name="ScoreProgress" type="TextureProgressBar" parent="score_label"]
+texture_filter = 1
+offset_left = 46.0
+offset_top = 98.0
+offset_right = 293.0
+offset_bottom = 136.0
+max_value = 1200.0
+nine_patch_stretch = true
+texture_over = ExtResource("7_qpk70")
+texture_progress = SubResource("AtlasTexture_17rxn")
+
+[node name="RankLabel" type="Label" parent="score_label/ScoreProgress"]
+layout_mode = 0
+offset_left = 422.0
+offset_top = -26.0
+offset_right = 669.0
+offset_bottom = 5.0
+theme_override_fonts/font = ExtResource("5_p1ry8")
+theme_override_font_sizes/font_size = 30
+text = "C"
+horizontal_alignment = 1
