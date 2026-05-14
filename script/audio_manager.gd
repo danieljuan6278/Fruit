@@ -5,7 +5,7 @@ var failed_snd = preload("res://assets/sounds/failed.wav")
 # var menu_snd = preload("res://assets/sounds/menu.flac")
 var buttons_snd = preload("res://assets/sounds/buttons.wav")
 var combo_snd = preload("res://assets/sounds/combo.wav")
-var game_over_snd = preload("res://assets/sounds/game_over.wav")
+var game_over_snd = preload(	"res://assets/sounds/game_over.wav")
 
 var bgm_player: AudioStreamPlayer
 var sfx_players: Array = []
