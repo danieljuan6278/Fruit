@@ -8,13 +8,56 @@ class_name UIManager
 
 var game_state: GameState
 
+# Color themes per phase: C, B, A, S, S+
+# Each theme: { font_color, outline_color, shadow_color, bar_tint, accent }
+var phase_themes: Array = [
+	{  # C - Orange/warm (starting phase)
+		"font_color": Color(1, 0.92, 0.2, 1),
+		"outline_color": Color(0, 0, 0, 1),
+		"shadow_color": Color(0.15, 0.1, 0.0, 0.7),
+		"bar_tint": Color(1, 0.85, 0.3, 1),
+		"accent": Color(1, 0.75, 0.2, 1),
+		"bar_texture": "res://assets/horizontal bars/most rounded/progress bar most rounded progress orange.png"
+	},
+	{  # B - Blue/cool
+		"font_color": Color(0.4, 0.75, 1.0, 1),
+		"outline_color": Color(0, 0, 0, 1),
+		"shadow_color": Color(0.0, 0.05, 0.2, 0.7),
+		"bar_tint": Color(0.5, 0.8, 1.0, 1),
+		"accent": Color(0.3, 0.65, 1.0, 1),
+		"bar_texture": "res://assets/horizontal bars/most rounded/progress bar most rounded progress blue.png"
+	},
+	{  # A - Red/fiery
+		"font_color": Color(1.0, 0.35, 0.25, 1),
+		"outline_color": Color(0, 0, 0, 1),
+		"shadow_color": Color(0.2, 0.0, 0.0, 0.7),
+		"bar_tint": Color(1.0, 0.4, 0.3, 1),
+		"accent": Color(1.0, 0.25, 0.15, 1),
+		"bar_texture": "res://assets/horizontal bars/most rounded/progress bar most rounded progress red.png"
+	},
+	{  # S - Yellow/brilliant
+		"font_color": Color(1.0, 1.0, 0.2, 1),
+		"outline_color": Color(0, 0, 0, 1),
+		"shadow_color": Color(0.15, 0.12, 0.0, 0.7),
+		"bar_tint": Color(1.0, 1.0, 0.4, 1),
+		"accent": Color(1.0, 0.95, 0.2, 1),
+		"bar_texture": "res://assets/horizontal bars/most rounded/progress bar most rounded progress purple.png"
+	},
+	{  # S+ - Gold/legendary
+		"font_color": Color(1.0, 0.84, 0.0, 1),
+		"outline_color": Color(0, 0, 0, 1),
+		"shadow_color": Color(0.2, 0.15, 0.0, 0.7),
+		"bar_tint": Color(1.0, 0.78, 0.2, 1),
+		"accent": Color(1.0, 0.75, 0.0, 1),
+		"bar_texture": "res://assets/horizontal bars/most rounded/progress bar most rounded progress orange.png"
+	}
+]
+
 func _ready():
-	# Resolve node paths from scene
 	_resolve_node_paths()
-	# Initialize progress bar
 	if progress_bar:
 		progress_bar.min_value = 0
-		progress_bar.max_value = 1200  # Default for phase C
+		progress_bar.max_value = 1200
 		progress_bar.value = 0
 
 func _resolve_node_paths():
@@ -64,24 +107,86 @@ func _on_moves_updated(moves_left: int):
 		moves_label.text = "Moves: " + str(moves_left)
 
 func _on_phase_changed(phase: String, moves: int):
-	"""Update rank display and progress bar when phase changes"""
+	"""Update rank display and apply color theme when phase changes"""
 	if rank_label:
 		rank_label.text = phase
 	
 	# Update progress bar for new phase
 	if progress_bar:
 		progress_bar.max_value = 1200
+	
+	# Apply the color theme for this phase
+	_apply_phase_theme()
 
 func _on_combo_bonus(bonus_moves: int):
 	"""Show combo bonus feedback"""
 	print("Combo Bonus! +%d Move(s)" % bonus_moves)
 	if moves_label:
+		var theme = _get_current_theme()
 		_pulse_label(moves_label, Color(0.55, 0.9, 0.35))
 
 func _on_game_over(phase: String):
 	"""Handle game over"""
 	print("Game Over! Out of moves in phase %s." % phase)
-	# Add game over screen here later
+
+func _get_current_theme() -> Dictionary:
+	"""Get the theme for the current phase"""
+	if game_state:
+		return phase_themes[clampi(game_state.current_phase, 0, phase_themes.size() - 1)]
+	return phase_themes[0]
+
+func _apply_phase_theme():
+	"""Apply color theme to all UI elements based on current phase"""
+	var theme = _get_current_theme()
+	
+	# Animate RankLabel color change
+	if rank_label:
+		var tween_rank = create_tween().set_parallel(true)
+		# Flash white then settle to the new color
+		rank_label.add_theme_color_override("font_color", Color.WHITE)
+		tween_rank.tween_property(rank_label, "scale", Vector2(1.3, 1.3), 0.15).set_trans(Tween.TRANS_BACK)
+		await tween_rank.finished
+		
+		var tween_settle = create_tween().set_parallel(true)
+		rank_label.add_theme_color_override("font_color", theme["font_color"])
+		rank_label.add_theme_color_override("font_shadow_color", theme["shadow_color"])
+		tween_settle.tween_property(rank_label, "scale", Vector2(1.0, 1.0), 0.3).set_trans(Tween.TRANS_ELASTIC)
+		await tween_settle.finished
+	
+	# Animate progress bar color swap
+	if progress_bar:
+		var bar_texture = load(theme["bar_texture"])
+		if bar_texture:
+			# Fade out, swap, fade in
+			var tween_bar = create_tween()
+			tween_bar.tween_property(progress_bar, "modulate:a", 0.0, 0.15)
+			await tween_bar.finished
+			progress_bar.texture_progress = bar_texture
+			progress_bar.modulate = Color(theme["bar_tint"].r, theme["bar_tint"].g, theme["bar_tint"].b, 0.0)
+			var tween_bar_in = create_tween()
+			tween_bar_in.tween_property(progress_bar, "modulate", theme["bar_tint"], 0.25)
+	
+	# Animate ScoreContainer label accent
+	if score_label:
+		var score_texture = score_label.get_parent()  # The TextureRect
+		if score_texture:
+			var accent_color = Color(
+				lerp(1.0, theme["accent"].r, 0.3),
+				lerp(1.0, theme["accent"].g, 0.3),
+				lerp(1.0, theme["accent"].b, 0.3),
+				1.0
+			)
+			var tween_score = create_tween()
+			tween_score.tween_property(score_texture, "modulate", accent_color, 0.4).set_trans(Tween.TRANS_SINE)
+		
+		# Tint the score font slightly toward the phase color
+		var font_tint = Color(
+			lerp(1.0, theme["font_color"].r, 0.2),
+			lerp(0.95, theme["font_color"].g, 0.2),
+			lerp(0.82, theme["font_color"].b, 0.2),
+			1.0
+		)
+		score_label.add_theme_color_override("font_color", font_tint)
 
 func _pulse_score_label():
 	"""Animate score label"""
@@ -89,9 +194,10 @@ func _pulse_score_label():
 		return
 	
 	var scoreboard_ui = score_label.get_parent()
+	var theme = _get_current_theme()
 	var tween = create_tween()
 	tween.tween_property(scoreboard_ui, "scale", Vector2(1.1, 1.1), 0.1)
-	tween.tween_property(scoreboard_ui, "modulate", Color(1.0, 0.86, 0.25), 0.1)
+	tween.tween_property(scoreboard_ui, "modulate", theme["accent"], 0.1)
 	tween.chain().tween_property(scoreboard_ui, "scale", Vector2(1.0, 1.0), 0.2)
 	tween.tween_property(scoreboard_ui, "modulate", Color.WHITE, 0.2)
 
@@ -120,3 +226,14 @@ func initialize_display():
 		if progress_bar:
 			progress_bar.max_value = info["phase_size"]
 			progress_bar.value = info["phase_score"]
+		
+		# Apply initial theme without animation
+		var theme = _get_current_theme()
+		if rank_label:
+			rank_label.add_theme_color_override("font_color", theme["font_color"])
+			rank_label.add_theme_color_override("font_shadow_color", theme["shadow_color"])
+		if progress_bar:
+			var bar_texture = load(theme["bar_texture"])
+			if bar_texture:
+				progress_bar.texture_progress = bar_texture
+			progress_bar.modulate = theme["bar_tint"]

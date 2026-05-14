@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://ja6sbwjaiyat" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/resumebutton.png" id="2_me6vf"]
 [ext_resource type="Texture2D" uid="uid://ccmeheycq6bj6" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/restart pause.png" id="4_qbwph"]
 [ext_resource type="Texture2D" uid="uid://ba28injmkmvq2" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/UI Big Play Button-58c8.png" id="4_ug2vv"]
+[ext_resource type="FontFile" uid="uid://cm1h8q3vjfypk" path="res://assets/Namistre.otf" id="5_namistre"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ug2vv"]
 atlas = ExtResource("2_cq4tv")
@@ -45,10 +46,10 @@ script = ExtResource("1_pausemenu")
 
 [node name="PauseButton" type="TextureButton" parent="." unique_id=239840653]
 texture_filter = 1
-offset_left = 637.0
-offset_top = 28.000002
-offset_right = 659.0
-offset_bottom = 52.000004
+offset_left = 636.0
+offset_top = 61.0
+offset_right = 658.0
+offset_bottom = 85.0
 scale = Vector2(2.6494124, 2.4705193)
 size_flags_horizontal = 4
 texture_normal = SubResource("AtlasTexture_ug2vv")
@@ -75,7 +76,14 @@ theme_override_constants/separation = 20
 
 [node name="Title" type="Label" parent="Overlay/VBoxContainer" unique_id=1500184295]
 layout_mode = 2
-theme_override_font_sizes/font_size = 60
+theme_override_colors/font_color = Color(1, 0.92, 0.2, 1)
+theme_override_colors/font_shadow_color = Color(0.15, 0.1, 0.0, 0.7)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 16
+theme_override_fonts/font = ExtResource("5_namistre")
+theme_override_font_sizes/font_size = 72
 text = "PAUSED"
 horizontal_alignment = 1
 
