@@ -13,6 +13,7 @@ extends Node2D
 var game_state: GameState
 var fruits = ["black", "red", "green", "yellow", "orange"]
 var all_pieces = []
+var combo_positions: Array = []  # Track positions of destroyed pieces for combo display
 
 var first_piece = null
 var is_swapping = false 
@@ -177,14 +178,23 @@ func find_matches() -> bool:
 func destroy_matches():
 	game_state.increment_matches()
 	var destroyed_count = 0
+	var avg_pos = Vector2.ZERO
 	for i in width:
 		for j in height:
 			if all_pieces[i][j] != null and all_pieces[i][j].is_matched:
+				avg_pos += all_pieces[i][j].global_position
 				destroyed_count += 1
 				all_pieces[i][j].queue_free()
 				all_pieces[i][j] = null
 	
 	if destroyed_count > 0:
+		avg_pos /= destroyed_count
+		if game_state.match_count >= 3:
+			var combo_display = preload("res://script/combo_display.gd").new()
+			combo_display.text = "Combo" # Just "Combo" per user instructions
+			add_child(combo_display)
+			combo_display.show_combo_at(avg_pos, game_state.match_count)
+			
 		calculate_score(destroyed_count)
 	
 	await get_tree().create_timer(0.2).timeout
