@@ -1,8 +1,41 @@
-[gd_scene load_steps=2 format=3 uid="uid://d3pdgfgjf2r8u"]
+[gd_scene format=3 uid="uid://d3pdgfgjf2r8u"]
 
 [ext_resource type="Script" uid="uid://cwhmbl776j6i2" path="res://script/main_menu.gd" id="1_mainmenu"]
+[ext_resource type="Texture2D" uid="uid://06hncnxgm34t" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/UI Big Play Button2.png" id="3_0iwki"]
+[ext_resource type="Texture2D" uid="uid://bwjlu26o5xwmn" path="res://assets/main_UI.png" id="3_background"]
+[ext_resource type="Texture2D" uid="uid://ba28injmkmvq2" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/UI Big Play Button-58c8.png" id="4_0iwki"]
 
-[node name="MainMenu" type="Control"]
+[sub_resource type="Environment" id="Environment_menu"]
+background_mode = 3
+adjustment_enabled = true
+adjustment_contrast = 0.85
+adjustment_saturation = 0.9
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_14wem"]
+atlas = ExtResource("3_0iwki")
+region = Rect2(3, 34, 90, 27)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2atga"]
+atlas = ExtResource("3_0iwki")
+region = Rect2(99, 36, 90, 25)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sepwh"]
+atlas = ExtResource("4_0iwki")
+region = Rect2(16, 192, 544, 160)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_by01r"]
+atlas = ExtResource("4_0iwki")
+region = Rect2(594, 204, 540, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dclss"]
+atlas = ExtResource("4_0iwki")
+region = Rect2(18, 0, 540, 162)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hmxu4"]
+atlas = ExtResource("4_0iwki")
+region = Rect2(594, 12, 539, 150)
+
+[node name="MainMenu" type="Control" unique_id=690273689]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,54 +44,70 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_mainmenu")
 
-[node name="AnimatedBackgroundPlaceholder" type="ColorRect" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=846430874]
+environment = SubResource("Environment_menu")
+
+[node name="AnimatedBackgroundPlaceholder" type="TextureRect" parent="." unique_id=1902755658]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.13, 0.13, 0.2, 1)
+texture = ExtResource("3_background")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1307567031]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = -150.0
-offset_right = 150.0
-offset_bottom = 150.0
+offset_left = -272.0
+offset_top = -309.5
+offset_right = 272.0
+offset_bottom = 309.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 20
 
-[node name="Title" type="Label" parent="VBoxContainer"]
+[node name="Title" type="Label" parent="VBoxContainer" unique_id=1741674877]
 layout_mode = 2
 theme_override_font_sizes/font_size = 64
-text = "FruitCrash"
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="VBoxContainer"]
+[node name="Spacer" type="Control" parent="VBoxContainer" unique_id=1408998626]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 
-[node name="PlayButton" type="Button" parent="VBoxContainer"]
-custom_minimum_size = Vector2(0, 80)
+[node name="PlayButton" type="TextureButton" parent="VBoxContainer" unique_id=1088977080]
+texture_filter = 1
+custom_minimum_size = Vector2(400, 120)
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Play"
+size_flags_horizontal = 4
+texture_normal = SubResource("AtlasTexture_14wem")
+texture_pressed = SubResource("AtlasTexture_2atga")
+ignore_texture_size = true
+stretch_mode = 5
 
-[node name="SettingButton" type="Button" parent="VBoxContainer"]
-custom_minimum_size = Vector2(0, 80)
+[node name="SettingButton" type="TextureButton" parent="VBoxContainer" unique_id=256366864]
+texture_filter = 1
+custom_minimum_size = Vector2(400, 120)
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Settings"
+size_flags_horizontal = 4
+texture_normal = SubResource("AtlasTexture_sepwh")
+texture_pressed = SubResource("AtlasTexture_by01r")
+ignore_texture_size = true
+stretch_mode = 5
 
-[node name="QuitButton" type="Button" parent="VBoxContainer"]
-custom_minimum_size = Vector2(0, 80)
+[node name="QuitButton" type="TextureButton" parent="VBoxContainer" unique_id=1556908828]
+texture_filter = 1
+custom_minimum_size = Vector2(400, 120)
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Quit"
+size_flags_horizontal = 4
+texture_normal = SubResource("AtlasTexture_dclss")
+texture_pressed = SubResource("AtlasTexture_hmxu4")
+ignore_texture_size = true
+stretch_mode = 5
