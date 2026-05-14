@@ -8,6 +8,12 @@
 [ext_resource type="Texture2D" uid="uid://cu6y1wtk0liwj" path="res://assets/tilesets/background.png" id="5_g87t3"]
 [ext_resource type="Texture2D" uid="uid://bvigbp0ldbigu" path="res://assets/tilesets/wooden_house_walls.png" id="6_kr1i7"]
 
+[sub_resource type="Environment" id="Environment_vibe"]
+background_mode = 3
+adjustment_enabled = true
+adjustment_contrast = 0.95
+adjustment_saturation = 1.05
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ymhky"]
 texture = ExtResource("1_55p1v")
 0:0/0 = 0
@@ -5968,6 +5974,9 @@ texture = ExtResource("6_kr1i7")
 sources/0 = SubResource("TileSetAtlasSource_fijou")
 
 [node name="MainScene" type="Node2D" unique_id=1051734695]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=856687638]
+environment = SubResource("Environment_vibe")
 
 [node name="FruitGrass" type="Node2D" parent="." unique_id=927156378]
 

@@ -1,6 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://d3pdgfgjf2r8u"]
+[gd_scene load_steps=5 format=3 uid="uid://d3pdgfgjf2r8u"]
 
 [ext_resource type="Script" uid="uid://cwhmbl776j6i2" path="res://script/main_menu.gd" id="1_mainmenu"]
+[ext_resource type="Texture2D" uid="uid://7g1mk3gvl8m1" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/Sprite sheet for Basic Pack.png" id="2_spritesheet"]
+[ext_resource type="Texture2D" uid="uid://bwjlu26o5xwmn" path="res://assets/main_UI.png" id="3_background"]
+
+[sub_resource type="Environment" id="Environment_menu"]
+background_mode = 3
+adjustment_enabled = true
+adjustment_contrast = 0.85
+adjustment_saturation = 0.9
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -11,14 +19,19 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_mainmenu")
 
-[node name="AnimatedBackgroundPlaceholder" type="ColorRect" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_menu")
+
+[node name="AnimatedBackgroundPlaceholder" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.13, 0.13, 0.2, 1)
+texture = ExtResource("3_background")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -48,8 +61,9 @@ layout_mode = 2
 [node name="PlayButton" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Play"
+icon = ExtResource("2_spritesheet")
+icon_alignment = 1
+expand_icon = true
 
 [node name="SettingButton" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 80)
