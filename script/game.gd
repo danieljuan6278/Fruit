@@ -1,5 +1,7 @@
 extends Node2D
 
+const BoardGridScript = preload("res://script/board_grid.gd")
+
 @export var grid_tile_scene: PackedScene
 @export var piece_scene: PackedScene
 @export var ui_manager: UIManager
@@ -16,14 +18,21 @@ extends Node2D
 
 @export var width: int = 8
 @export var height: int = 10
-@export var x_start: int = 65
+@export var x_start: int = 60
 @export var y_start: int = 1000
 @export var offset: int = 80
+@export_group("Grid Lines")
+@export var grid_line_color: Color = Color(0.0, 0.449, 0.0, 0.651)
+@export_range(1.0, 12.0, 0.5) var grid_line_width: float = 5.0
+@export var grid_line_z_index: int = 1
+@export var grid_position_offset: Vector2 = Vector2.ZERO
+@export_group("")
 
 var game_state: GameState
 var fruits = ["black", "red", "green", "yellow", "orange"]
 var all_pieces = []
 var combo_positions: Array = []  # Track positions of destroyed pieces for combo display
+var board_grid: Node2D
 
 var first_piece = null
 var is_swapping = false 
@@ -48,6 +57,7 @@ func _ready() -> void:
 	game_state.game_over.connect(func(_phase): pause_menu.show_game_over())
 	
 	all_pieces = make_2d_array()
+	draw_grid_lines()
 	spawn_board()
 
 func make_2d_array():
@@ -59,24 +69,30 @@ func make_2d_array():
 	return array
 
 func spawn_board():
-	if piece_scene == null or grid_tile_scene == null: 
+	if piece_scene == null: 
 		return
 	for i in width:
 		for j in height:
-			# Example: nudge every piece 5 pixels right and 5 pixels up
-			var nudge_x = -5
-			var nudge_y = -5 
-
-			var pos = Vector2(x_start + (i * offset) + nudge_x, y_start - (j * offset) + nudge_y)
-			var tile = grid_tile_scene.instantiate()
-			add_child(tile)
-			tile.position = pos
-			tile.z_index = -1 
+			var pos = Vector2(x_start + (i * offset), y_start - (j * offset))
 			spawn_safe_piece(i, j, pos)
+
+func draw_grid_lines():
+	if board_grid:
+		board_grid.queue_free()
+	
+	board_grid = BoardGridScript.new()
+	board_grid.name = "BoardGrid"
+	board_grid.z_index = grid_line_z_index
+	board_grid.position = grid_position_offset
+	board_grid.line_color = grid_line_color
+	board_grid.line_width = grid_line_width
+	add_child(board_grid)
+	board_grid.build(width, height, x_start, y_start, offset)
 
 func spawn_safe_piece(i, j, pos):
 	var piece = piece_scene.instantiate()
 	add_child(piece)
+	piece.z_index = grid_line_z_index + 1
 	var random_fruit = fruits[randi() % fruits.size()]
 	var attempts = 0
 	while is_initial_match(i, j, random_fruit) and attempts < 10:
@@ -284,6 +300,7 @@ func refill_columns():
 			if all_pieces[i][j] == null:
 				var piece = piece_scene.instantiate()
 				add_child(piece)
+				piece.z_index = grid_line_z_index + 1
 				piece.set_fruit(fruits[randi() % fruits.size()])
 				var end_pos = Vector2(x_start + (i * offset), y_start - (j * offset))
 				piece.position = end_pos + Vector2(0, -offset * 2) 
