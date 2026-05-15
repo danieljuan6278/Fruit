@@ -5,7 +5,7 @@ class_name GameState
 var current_phase: int = 0
 var phases: Array = ["C", "B", "A", "S", "S+"]
 var phase_targets: Array = [1200, 2400, 3600, 4800, 0]  # Total score ceilings; 0 for unlimited in S+
-var phase_moves: Array = [30, 25, 20, 15, 10]
+var phase_moves: Array = [2, 25, 20, 15, 10]
 
 # Score and moves tracking
 var moves_left: int = 30
