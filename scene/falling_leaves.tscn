@@ -1,18 +1,19 @@
 [gd_scene format=3 uid="uid://cc1fo22pst7rh"]
 
-[ext_resource type="Texture2D" path="res://assets/leaves/leaf.png" id="1_leaf"]
+[ext_resource type="Texture2D" uid="uid://bgygp8shxbfew" path="res://assets/leaves/leaf.png" id="1_leaf"]
 
 [sub_resource type="Gradient" id="Gradient_leaf"]
 offsets = PackedFloat32Array(0, 0.7, 1)
 colors = PackedColorArray(1, 0.9, 0.4, 1, 0.9, 0.6, 0.3, 1, 0.7, 0.4, 0.2, 0.8)
 
-[node name="FallingLeaves" type="CPUParticles2D"]
+[node name="FallingLeaves" type="CPUParticles2D" unique_id=1204831799]
+emitting = false
 amount = 120
 texture = ExtResource("1_leaf")
 lifetime = 6.0
 one_shot = true
-explosiveness = 0.25
 preprocess = 0.8
+explosiveness = 0.25
 randomness = 0.8
 emission_shape = 2
 emission_sphere_radius = 260.0

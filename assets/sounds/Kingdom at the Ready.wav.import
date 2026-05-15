@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://btc78a3s8jyiw"
+path="res://.godot/imported/Kingdom at the Ready.wav-0180584b136b6b29bbd304d4f6b47613.sample"
+
+[deps]
+
+source_file="res://assets/sounds/Kingdom at the Ready.wav"
+dest_files=["res://.godot/imported/Kingdom at the Ready.wav-0180584b136b6b29bbd304d4f6b47613.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

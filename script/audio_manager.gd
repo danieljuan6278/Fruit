@@ -2,7 +2,8 @@ extends Node
 
 var success_snd = preload("res://assets/sounds/success.wav")
 var failed_snd = preload("res://assets/sounds/failed.wav")
-# var menu_snd = preload("res://assets/sounds/menu.flac")
+var menu_snd = preload("res://assets/sounds/menu.wav")
+var main_play_snd = preload("res://assets/sounds/Kingdom at the Ready.wav")
 var buttons_snd = preload("res://assets/sounds/buttons.wav")
 var combo_snd = preload("res://assets/sounds/combo.wav")
 var game_over_snd = preload(	"res://assets/sounds/game_over.wav")
@@ -21,6 +22,13 @@ func _ready():
 		var p = AudioStreamPlayer.new()
 		add_child(p)
 		sfx_players.append(p)
+
+func play_main_bgm():
+	if bgm_player.stream != main_play_snd:
+		bgm_player.stream = main_play_snd
+		bgm_player.play()
+	elif not bgm_player.playing:
+		bgm_player.play()
 
 func play_sfx(stream: AudioStream):
 	for p in sfx_players:
@@ -48,12 +56,11 @@ func play_game_over():
 	play_sfx(game_over_snd)
 
 func play_menu_music():
-	pass
-	# if bgm_player.stream != menu_snd:
-	# 	bgm_player.stream = menu_snd
-	# 	bgm_player.play()
-	# elif not bgm_player.playing:
-	# 	bgm_player.play()
+	if bgm_player.stream != menu_snd:
+		bgm_player.stream = menu_snd
+		bgm_player.play()
+	elif not bgm_player.playing:
+		bgm_player.play()
 
 func stop_music():
 	bgm_player.stop()

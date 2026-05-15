@@ -8,6 +8,9 @@ func _ready():
 
 func _on_play_pressed():
 	AudioManager.play_buttons()
+	AudioManager.stop_music()
+	AudioManager.play_main_bgm()
+	
 	get_tree().change_scene_to_file("res://scene/main_scene.tscn")
 
 func _on_setting_pressed():
