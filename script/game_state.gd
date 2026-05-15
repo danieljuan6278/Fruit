@@ -48,7 +48,7 @@ func use_move() -> bool:
 		moves_left -= 1
 		moves_updated.emit(moves_left)
 		
-		if moves_left <= 0 and current_phase < 4:
+		if moves_left <= 0:
 			game_over.emit(phases[current_phase])
 		return true
 	return false

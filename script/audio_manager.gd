@@ -5,7 +5,7 @@ var failed_snd = preload("res://assets/sounds/failed.wav")
 # var menu_snd = preload("res://assets/sounds/menu.flac")
 var buttons_snd = preload("res://assets/sounds/buttons.wav")
 var combo_snd = preload("res://assets/sounds/combo.wav")
-var game_over_snd = preload("res://assets/sounds/game_over.wav")
+var game_over_snd = preload(	"res://assets/sounds/game_over.wav")
 
 var bgm_player: AudioStreamPlayer
 var sfx_players: Array = []
@@ -57,3 +57,7 @@ func play_menu_music():
 
 func stop_music():
 	bgm_player.stop()
+
+func set_master_volume(volume: float):
+	"""Set master volume (0.0 to 1.0)"""
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), linear_to_db(volume))

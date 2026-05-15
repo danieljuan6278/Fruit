@@ -171,7 +171,6 @@ func swap_pieces(p1, p2):
 	
 	game_state.match_count = 0  # Reset for this turn
 	if find_matches():
-		AudioManager.play_success()
 		if game_state.use_move():  # Deduct move only if successful match
 			pass
 		# is_swapping is set to false in refill_columns() once all cascades are finished
@@ -208,6 +207,7 @@ func find_matches() -> bool:
 							all_pieces[i][j+1].is_matched = true
 							found_match = true
 	if found_match:
+		AudioManager.play_success()
 		destroy_matches()
 	return found_match
 
@@ -222,7 +222,7 @@ func destroy_matches():
 				destroyed_count += 1
 				all_pieces[i][j].queue_free()
 				all_pieces[i][j] = null
-	
+
 	if destroyed_count > 0:
 		avg_pos /= destroyed_count
 		if game_state.match_count >= 3:
@@ -239,9 +239,8 @@ func destroy_matches():
 			)
 			add_child(combo_display)
 			combo_display.show_combo_at(avg_pos, game_state.match_count)
-			
 		calculate_score(destroyed_count)
-	
+
 	await get_tree().create_timer(0.2).timeout
 	collapse_columns()
 

@@ -12,7 +12,8 @@ func _on_play_pressed():
 
 func _on_setting_pressed():
 	AudioManager.play_buttons()
-	print("Settings not implemented yet")
+	var settings_menu = preload("res://scene/settings_menu.tscn").instantiate()
+	add_child(settings_menu)
 
 func _on_quit_pressed():
 	AudioManager.play_buttons()
