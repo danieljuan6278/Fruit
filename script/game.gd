@@ -29,6 +29,7 @@ const BoardGridScript = preload("res://script/board_grid.gd")
 @export_group("")
 
 var game_state: GameState
+var combo_layer: CanvasLayer
 var fruits = ["black", "red", "green", "yellow", "orange"]
 var all_pieces = []
 var combo_positions: Array = []  # Track positions of destroyed pieces for combo display
@@ -58,6 +59,8 @@ func _ready() -> void:
 		AudioManager.play_game_over()
 		pause_menu.show_game_over()
 	)
+	
+	combo_layer = get_node("combo_layer")
 	
 	all_pieces = make_2d_array()
 	draw_grid_lines()
@@ -237,8 +240,17 @@ func destroy_matches():
 				combo_start_scale,
 				combo_explosion_scale
 			)
-			add_child(combo_display)
-			combo_display.show_combo_at(avg_pos, game_state.match_count)
+			if combo_layer:
+				combo_layer.add_child(combo_display)
+			else:
+				add_child(combo_display)
+				
+			# Convert world position to screen position for the CanvasLayer
+			var display_pos = avg_pos
+			if combo_layer:
+				display_pos = get_viewport().get_canvas_transform() * avg_pos
+				
+			combo_display.show_combo_at(display_pos, game_state.match_count)
 		calculate_score(destroyed_count)
 
 	await get_tree().create_timer(0.2).timeout

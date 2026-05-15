@@ -127,6 +127,9 @@ text = "30"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="combo_layer" type="CanvasLayer" parent="." unique_id=987654321]
+layer = 10
+
 [node name="UIManager" type="Node" parent="." unique_id=933798985 node_paths=PackedStringArray("score_label", "rank_label", "moves_label", "progress_bar")]
 script = ExtResource("1_jd5gt")
 score_label = NodePath("../score_label/ScoreContainer/TextureRect/Label")
