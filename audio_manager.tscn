@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://c23xojmysbk50"]
+
+[node name="audio_manager" type="Node2D" unique_id=1419420055]
+
+[node name="bgm_player" type="AudioStreamPlayer2D" parent="." unique_id=1845360268]
+
+[node name="sfx_player" type="AudioStreamPlayer2D" parent="." unique_id=2011600031]
