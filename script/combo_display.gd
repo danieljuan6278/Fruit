@@ -40,7 +40,11 @@ func show_combo_at(world_position: Vector2, combo_count: int = 3):
 	_update_layout_size()
 	
 	pivot_offset = size * 0.5
-	global_position = world_position - pivot_offset
+	var viewport_rect = get_viewport_rect()
+	var clamped_position = world_position
+	clamped_position.x = clamp(clamped_position.x, pivot_offset.x, viewport_rect.size.x - pivot_offset.x)
+	clamped_position.y = clamp(clamped_position.y, pivot_offset.y, viewport_rect.size.y - pivot_offset.y)
+	global_position = clamped_position - pivot_offset
 	scale = Vector2(start_scale, start_scale)
 	modulate.a = 0.0
 	
