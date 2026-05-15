@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://settings_menu"]
+[gd_scene load_steps=7 format=3 uid="uid://settings_menu"]
 
 [ext_resource type="Script" path="res://script/settings_menu.gd" id="1_settings"]
 [ext_resource type="Texture2D" uid="uid://ba28injmkmvq2" path="res://assets/ui/Sprout Lands - UI Pack - Basic pack/Sprite sheets/UI Big Play Button-58c8.png" id="2_back_btn"]
@@ -11,8 +11,32 @@ region = Rect2(18, 0, 540, 162)
 atlas = ExtResource("2_back_btn")
 region = Rect2(594, 12, 539, 150)
 
+[sub_resource type="Shader" id="Shader_blur"]
+code = "shader_type canvas_item;
+
+uniform float blur_amount : hint_range(0, 5) = 2.0;
+
+void fragment() {
+	vec4 color = textureLod(SCREEN_TEXTURE, SCREEN_UV, blur_amount);
+	COLOR = color;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
+shader = SubResource("Shader_blur")
+shader_parameter/blur_amount = 2.0
+
 [node name="SettingsMenu" type="CanvasLayer"]
 script = ExtResource("1_settings")
+
+[node name="BackgroundBlur" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_blur")
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5)
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -45,6 +69,8 @@ theme_override_font_sizes/font_size = 48
 
 [node name="VolumeLabel" type="Label" parent="Control/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 50
 text = "Volume"
 horizontal_alignment = 1
 
