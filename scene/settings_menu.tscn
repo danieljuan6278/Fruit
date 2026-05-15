@@ -49,6 +49,7 @@ text = "Volume"
 horizontal_alignment = 1
 
 [node name="VolumeSlider" type="HSlider" parent="Control/VBoxContainer"]
+custom_minimum_size = Vector2(400, 60)
 layout_mode = 2
 min_value = 0.0
 max_value = 1.0
