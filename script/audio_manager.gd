@@ -57,3 +57,7 @@ func play_menu_music():
 
 func stop_music():
 	bgm_player.stop()
+
+func set_master_volume(volume: float):
+	"""Set master volume (0.0 to 1.0)"""
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), linear_to_db(volume))

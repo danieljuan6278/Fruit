@@ -12,10 +12,6 @@ config_version=5
 
 compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
-[autoload]
-
-AudioManager="*res://script/audio_manager.gd"
-
 [application]
 
 config/name="Armilyn"
@@ -23,12 +19,17 @@ run/main_scene="res://scene/main_menu.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+AudioManager="*res://script/audio_manager.gd"
+
 [display]
 
 window/size/viewport_width=720
 window/size/viewport_height=1280
 window/size/mode=3
 window/stretch/mode="canvas_items"
+window/handheld/orientation=1
 
 [input_devices]
 
@@ -43,3 +44,4 @@ pointing/stretch/aspect="keep"
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
